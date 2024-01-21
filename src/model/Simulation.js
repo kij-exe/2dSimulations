@@ -6,15 +6,15 @@ class Simulation {
     }
 
     isActive() {
-        return is_active;
+        return this.is_active;
     }
 
     pause() {
-        console.log("pause sim function invoked");
+        this.is_active = false;
     }
 
     continue() {
-        console.log("continue simulation function invoked");
+        this.is_active = true;
     }
 
     update() {
