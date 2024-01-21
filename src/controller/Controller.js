@@ -66,26 +66,27 @@ class Controller {
         body_element.appendChild(add_sim_button);
         //   put the dropdown and the button on the screen
         
-        this.update(0);
-        this.prev_timestamp = 0;
-
-        //   start the update loop of the controller with the initial
-        //   timestamp of 0
+        requestAnimationFrame((timestamp) => {
+            this.prev_timestamp = timestamp;
+            //   the first instance when the update method is called
+            this.update(timestamp);
+            //   start the update loop
+        });
     }
 
     update(timestamp) {
         let dt = timestamp - this.prev_timestamp;
-        console.log(1000/dt);
+        //   calculating time from the last update
         this.prev_timestamp = timestamp;
 
-        //   calculating a time from the last frame
-        // for (let i = 0; i < this.sim_list.length; i++) {
-        //     if (this.sim_list[i].isActive()) {
-        //         //   update and redraw every active simulation
-        //         this.sim_list[i].update(dt)
-        //         this.view_list[i].redraw()
-        //     }
-        // }
+        for (let i = 0; i < this.sim_list.length; i++) {
+            if (this.sim_list[i].isActive()) {
+                //   update and redraw every active simulation
+                this.sim_list[i].update(dt);
+                this.view_list[i].redraw();
+            }
+        }
+
         requestAnimationFrame((timestamp) => {
             this.update(timestamp);
         });
