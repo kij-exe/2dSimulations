@@ -4,6 +4,7 @@ import ParticleProjectionIO from "./ParticleProjectionIO.js";
 import GeneralPurposeIO from "./GeneralPurposeIO.js";
 import ViewSim from "../view/ViewSim.js";
 import Simulation from "../model/Simulation.js";
+import PriorityQueue from "../utility/PriorityQueue.js"
 
 
 class Controller {
@@ -72,6 +73,8 @@ class Controller {
             this.update(timestamp);
             //   start the update loop
         });
+
+        this.test();
     }
 
     update(timestamp) {
@@ -175,7 +178,6 @@ class Controller {
             }
         }
     }
-
 }
 
 
