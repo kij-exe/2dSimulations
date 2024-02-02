@@ -31,14 +31,19 @@ class Vector {
     added(vector) {
         let x = this.x + vector.x;
         let y = this.y + vector.y;
-        //   creating temporary variables for new x and y variables,
-        //   original vector is unchanged
         return new Vector(x, y);
     }
 
     subtract(vector) {
         let x = this.x - vector.x;
         let y = this.y - vector.y;
+    }
+
+    subtracted(vector) {
+        let x = this.x - vector.x;
+        let y = this.y - vector.y;
+        //   creating temporary variables for new x and y variables,
+        //   original vector is unchanged
         return new Vector(x, y);
     }
 
@@ -90,6 +95,23 @@ class Vector {
         if (this.x === 0 && this.y === 0)
             throw new Error("Zero vector cannot be normalised");
         return this.divided(this.length());
+    }
+
+    reflectedInX() {
+        let new_y = this.y * (-1);
+	    return new Vector(this.x, new_y);
+    }
+
+    reflectedInY() {
+        let new_x = this.x * (-1);
+	    return new Vector(new_x, this.y);
+    }
+
+    //   Allows to easily spread vector coordinates using 
+    //   spread operator
+    [Symbol.iterator] = function* () {
+        yield this.x;
+        yield this.y;
     }
 }
 
