@@ -18,7 +18,6 @@ class Simulation {
     }
 
     update() {
-        console.log("update method invoked")
     }
 }
 

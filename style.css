@@ -2,7 +2,7 @@ body * {
     background-color: rgb(46, 90, 231);
     color:aliceblue;
     padding: 10px;
-    max-width: 720px;
+    /* max-width: 720px; */
     outline: 2px solid turquoise;
     font-size: 14pt;
     margin: 10px;
@@ -13,3 +13,16 @@ body button {
     height: 45px;
     text-align: center;
 }
+
+.title {
+    margin-right: auto;
+}
+
+/* .sim_area_button {
+} */
+
+body canvas {
+    background-color: whitesmoke;
+    padding: 0;
+}
+
