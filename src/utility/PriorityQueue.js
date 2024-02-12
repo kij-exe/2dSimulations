@@ -111,6 +111,9 @@ class PriorityQueue {
         this.next_index -= 1;
         //   decrement the next_index attribute
 
+        this.heap.splice(this.next_index, 1)
+        //   delete previously last element
+
         this.sink(1);
         //   make the new first top element of the queue to go down
         //   so the property is maintained
@@ -121,7 +124,7 @@ class PriorityQueue {
         if (this.isEmpty())
             return null;
 
-        return this.heap[1]
+        return this.heap[1];
     }
 
 }

@@ -4,7 +4,7 @@ import PriorityQueue from "../utility/PriorityQueue.js"
 //   function for initialising the basic priority queue:
 //   [null, 30, 25, 20, 10, 3, 12, 18, 2, 4]
 //   used for both stage 1 and 2 tests
-function initialiseQueue() {
+function initializeQueue() {
     let pq = new PriorityQueue((a, b) => a - b);
     //   priority queue with the comparator that 
     //   prioritises the larger element
@@ -16,7 +16,7 @@ function initialiseQueue() {
 
 
 describe("Stage 1 testing", () => {
-    let pq = initialiseQueue();
+    let pq = initializeQueue();
 
     test("test (0)", () => {
         expect(pq.heap).toEqual([null, 30, 25, 20, 10, 3, 12, 18, 2, 4]);
@@ -44,7 +44,7 @@ describe("Stage 1 testing", () => {
 });
 
 describe("Stage 2 testing", () => {
-    let pq = initialiseQueue();
+    let pq = initializeQueue();
 
     test("test (1)", () => {
         expect(pq.pop()).toEqual(30);

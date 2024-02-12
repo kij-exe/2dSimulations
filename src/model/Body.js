@@ -5,6 +5,7 @@ class Body {
     constructor(id) {
         this.position = new Vector();
         this.velocity = new Vector();
+        this.acceleration = new Vector();
 
         this.id = id;
     }
@@ -15,6 +16,10 @@ class Body {
 
     getVelocity() {
         return this.velocity;
+    }
+
+    getAcceleration() {
+        return this.acceleration;
     }
 
     getId() {
