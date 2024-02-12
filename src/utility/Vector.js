@@ -97,6 +97,21 @@ class Vector {
         return this.divided(this.length());
     }
 
+    rotatedBy(angle, axis = new Vector()) {
+        let rotated_vector = this.subtracted(axis);
+        //   first tranlate the axis to the origin
+
+        rotated_vector = new Vector(
+            rotated_vector.x * Math.cos(angle) - rotated_vector.y * Math.sin(angle),
+            rotated_vector.x * Math.sin(angle) + rotated_vector.y * Math.cos(angle)
+        );
+        //   rotate vector like that
+
+        rotated_vector.add(axis);
+        //   translate the axis back
+        return rotated_vector;
+    }
+
     reflectedInX() {
         let new_y = this.y * (-1);
 	    return new Vector(this.x, new_y);

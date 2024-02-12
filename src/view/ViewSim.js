@@ -5,11 +5,11 @@ class ViewSim {
     constructor(id) {
         this.id = id;
         this.body_list = [];
-        this.scale = 1;
-        this.translation = new Vector();
         // initialising set of attributes to their initial values
 
         this.canvas = document.createElement("canvas");
+        this.canvas.width = 800;
+        this.canvas.height = 450;
         //   creating the canvas html element
         
         let sim_area = document.getElementById("sim_area" + id);
@@ -19,6 +19,9 @@ class ViewSim {
 
         this.ctx = this.canvas.getContext("2d");
         //   getting access to "context" of the canvas for drawing purposes
+
+        this.scale = 40;
+        this.translation = new Vector(0, this.canvas.height);
     }
 
     getId() {
@@ -26,10 +29,10 @@ class ViewSim {
     }
 
     redraw() {
-        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         //   clearing canvas area from the previous frame
         for (let i = 0; i < this.body_list.length; i++) {
-            this.body_list.redraw(this);
+            this.body_list[i].redraw(this);
             //   redrawing each body separately, if bodies are stored by layers,
             //   then first bodies will be below later bodies
         }

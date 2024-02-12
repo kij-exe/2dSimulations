@@ -5,6 +5,11 @@ import GeneralPurposeIO from "./GeneralPurposeIO.js";
 import ViewSim from "../view/ViewSim.js";
 import Simulation from "../model/Simulation.js";
 import PriorityQueue from "../utility/PriorityQueue.js"
+import PointMass from "../model/particle-projection/PointMass.js";
+import Vector from "../utility/Vector.js";
+import ViewPointMass from "../view/ViewPointMass.js";
+import TimeEvent from "../model/particle-projection/TimeEvent.js";
+import PositionEvent from "../model/particle-projection/PositionEvent.js";
 
 
 class Controller {
@@ -73,6 +78,7 @@ class Controller {
             this.update(timestamp);
             //   start the update loop
         });
+        this.stopped = false;
     }
 
     update(timestamp) {
@@ -84,8 +90,9 @@ class Controller {
             if (this.sim_list[i].isActive()) {
                 //   update and redraw every active simulation
                 this.sim_list[i].update(dt);
-                this.view_list[i].redraw();
             }
+
+            this.view_list[i].redraw();
         }
 
         requestAnimationFrame((timestamp) => {
@@ -150,6 +157,7 @@ class Controller {
 
         let container = document.createElement("div");
         container.style.display = "flex";
+        container.style.width = "100%";
         container.appendChild(title);
         container.appendChild(pause_sim_button);
         container.appendChild(continue_sim_button);
@@ -160,6 +168,10 @@ class Controller {
 
         body_element.appendChild(sim_area);
 
+        sim_area.style.display = "flex";
+        sim_area.style.flexFlow = "row wrap"
+        //   sim area styling
+
         let view = new ViewSim(this.next_id);
         this.view_list.push(view);
         let io = eval("new " + class_group + "IO(this.next_id, sim, view)");
@@ -168,6 +180,8 @@ class Controller {
 
         this.next_id++;
         //   increment id for the next simulation
+
+        this.test(sim, view);
     }
 
     terminateSim(sim) {
@@ -185,10 +199,27 @@ class Controller {
                 this.io_list.splice(i, 1);
                 //   remove all references to the simulation from the controller lists
 
-                return
+                return;
                 //   stop the function as the simulation was found
             }
         }
+    }
+
+    test(sim, view) {
+        let particle = new PointMass(
+            new Vector(),
+            new Vector(13*Math.cos(Math.PI/6), 13*Math.sin(Math.PI/6)),
+            new Vector(0, -9.8),
+            sim.getTime()
+        ); 
+        let view_particle = new ViewPointMass(particle, "black");
+        sim.addBody(particle);
+        view.addBody(view_particle);
+        
+        let event = new PositionEvent(particle, null, null);
+        event.setYtime(0);
+        console.log(event.getTime());
+        sim.addEvent(event);
     }
 }
 

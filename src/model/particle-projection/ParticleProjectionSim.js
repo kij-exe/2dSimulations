@@ -1,29 +1,30 @@
 import Simulation from "../Simulation.js";
 import PriorityQueue from "../../utility/PriorityQueue.js";
 import Event from "./Event.js"
+import TimeEvent from "./TimeEvent.js";
 
 
 class ParticleProjectionSim extends Simulation {
     constructor() {
         super();
         this.event_queue = new PriorityQueue(Event.compare);
-        this.body_list = [];
-        console.log("ParticleProjectionSim instantiated");
+        this.test();
     }
 
-    update() {
+    update(dt) {
         //   parameter dt denotes the change in time from the previous 
         //   frame 
+        this.time += dt;
 
-        this.time += dt
-
-        let event = this.event_queue.peek()
+        let event = this.event_queue.peek();
         //   peek the first event from the queue	
+        // console.log(dt);
 
-        if (event.getTime() > this.time) {
+        if (!this.event_queue.isEmpty() && event.getTime() < this.time) {
             //   if the time the event occurs is greater than the
             //   current time the simulation is at
             event.execute();
+            this.pause();
             //   execute the procedure defined when event was created
             this.time = event.getTime();
             //   set the time of the simulation to the moment when
@@ -33,8 +34,21 @@ class ParticleProjectionSim extends Simulation {
         }
 
         for (let i = 0; i < this.body_list.length; i++) {
-            body_list[i].update(this.time);
+            this.body_list[i].update(this.time);
         }
+    }
+
+    addEvent(event) {
+        this.event_queue.push(event);
+    }
+
+    test() {
+        // for (let time of [5, 10, 12, 20]) {
+        //     let event = new TimeEvent(null, null, 0);
+        //     event.setTime(time*1000);
+        //     //   time multiplied by 1000 to convert it to miliseconds
+        //     this.event_queue.push(event);
+        // }
     }
 }
 
