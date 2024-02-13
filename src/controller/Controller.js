@@ -26,14 +26,25 @@ class Controller {
         this.sim_classes = ["ParticleProjection", "GeneralPurpose"];
         //   lists of simulation names and their class identifiers
         //   can be easily changed if a new simulation is added
-        
+
+        this.createSimulationsDropDown();
+
+        this.next_id = 0;
+        //   id of the next simulation
+
+        this.createAddSimButton();
+
+        this.startUpdateLoop();
+    }
+
+    createSimulationsDropDown() {
         this.select = document.createElement("select");
         //   creating a select element for a dropdown menu
         
         let option = document.createElement("option");
-        option.value = -1
+        option.value = -1;
         option.innerHTML = "Choose a simulation";
-        this.select.appendChild(option)
+        this.select.appendChild(option);
         //   add a default option to the drop-down menu that prompts the
         //   user to choose a simulation
         
@@ -50,7 +61,14 @@ class Controller {
         //   value of each option will correspond to the index of
         //   corresponding simulation in the sim_list and to the
         //   name of its group of classes
+
+        let body_element = document.getElementsByTagName("body")[0];
+        //   retreive the body tag from the page
+        body_element.appendChild(this.select);
+        //   add the drop-down on the page
+    }
     
+    createAddSimButton() {
         let add_sim_button = document.createElement("button");
         //   instantiating a button that creates a new simulation
         add_sim_button.innerHTML = "+";
@@ -61,24 +79,19 @@ class Controller {
         //   assigning the function of adding a simulation to the button
         //   click on the button will invoke an add_sim function
         //   of the controller with associated index that is selected
-    
-        this.next_id = 0;
-        //   id of the next simulation
 
-        let body_element = document.getElementsByTagName("body")[0];
-        
+        let body_element = document.getElementsByTagName("body")[0];        
         //   retreive the body tag from the page
-        body_element.appendChild(this.select);
         body_element.appendChild(add_sim_button);
-        //   put the dropdown and the button on the screen
-        
+    }
+
+    startUpdateLoop() {     
         requestAnimationFrame((timestamp) => {
             this.prev_timestamp = timestamp;
             //   the first instance when the update method is called
             this.update(timestamp);
             //   start the update loop
         });
-        this.stopped = false;
     }
 
     update(timestamp) {
@@ -106,21 +119,66 @@ class Controller {
         if (index === -1)
             return
         //   if no option is chosen (value of -1), no simulation is added
-	
+        
         let class_group = this.sim_classes[index];
 	    //   name of the group of classes the added simulation belongs to
 
-	    let body_element = document.getElementsByTagName("body")[0];
-        //   retrieve the body element
-        let sim_area = document.createElement("div");
-        sim_area.id = "sim_area" + this.next_id.toString();
-        //   assigning an identifier to the new simulation area
+        let sim_area = this.createSimArea();
 
         let sim = eval("new " + class_group + "Sim()"); 
         this.sim_list.push(sim);
         //   instantiating sim object for the new simulation and
         //   adding it to the list 
 
+        this.createSimHeader(sim, sim_area, index);
+
+        let view = new ViewSim(this.next_id);
+        this.view_list.push(view);
+        let io = eval("new " + class_group + "IO(this.next_id, sim, view)");
+        this.io_list.push(io);
+        //   creating ViewSim and IOHandler objects
+
+        this.next_id++;
+        //   increment id for the next simulation
+
+        this.test(sim, view);
+    }
+
+    createSimArea() {
+        let sim_area = document.createElement("div");
+        sim_area.id = "sim_area" + this.next_id.toString();
+        //   assigning an identifier to the new simulation area
+        
+        sim_area.style.display = "flex";
+        sim_area.style.flexFlow = "row wrap";
+        //   sim area styling
+
+	    let body_element = document.getElementsByTagName("body")[0];
+        //   retrieve the body element
+        body_element.appendChild(sim_area);
+
+        return sim_area;
+    }
+
+    createSimHeader(sim, sim_area, index) {
+        let container = document.createElement("div");
+        container.style.display = "flex";
+        container.style.width = "100%";
+
+        let title = document.createElement("p");
+        title.innerHTML = this.sim_names[index];
+        title.classList.add("title");
+        //   creating a title paragraph html tag and setting its 
+        //   content to the name of the new simulation being added
+        container.appendChild(title);
+
+        this.createSimButtons(sim, container);
+
+        sim_area.appendChild(container);
+        //   adding buttons and the title on the sim_area
+    }
+
+    createSimButtons(sim, container) {
         let terminate_sim_button = document.createElement("button");
         terminate_sim_button.innerHTML = "X";
         terminate_sim_button.classList.add("sim_area_button");
@@ -148,40 +206,10 @@ class Controller {
         }
         //   adding buttons that terminate, pause and continue the simulation
         //   and assigning to them corresponding function using clousers
-
-        let title = document.createElement("p");
-        title.innerHTML = this.sim_names[index];
-        title.classList.add("title");
-        //   creating a title paragraph html tag and setting its 
-        //   content to the name of the new simulation being added
-
-        let container = document.createElement("div");
-        container.style.display = "flex";
-        container.style.width = "100%";
-        container.appendChild(title);
+        
         container.appendChild(pause_sim_button);
         container.appendChild(continue_sim_button);
         container.appendChild(terminate_sim_button);
-
-        sim_area.appendChild(container);
-        //   adding buttons and the title on the sim_area
-
-        body_element.appendChild(sim_area);
-
-        sim_area.style.display = "flex";
-        sim_area.style.flexFlow = "row wrap"
-        //   sim area styling
-
-        let view = new ViewSim(this.next_id);
-        this.view_list.push(view);
-        let io = eval("new " + class_group + "IO(this.next_id, sim, view)");
-        this.io_list.push(io);
-        //   creating ViewSim and IOHandler objects
-
-        this.next_id++;
-        //   increment id for the next simulation
-
-        this.test(sim, view);
     }
 
     terminateSim(sim) {
