@@ -8,8 +8,9 @@ body * {
 }
 
 body button {
-    width: 45px;
-    height: 45px;
+    width: 36px;
+    height: 36px;
+    font-size: 14pt;
     text-align: center;
 }
 

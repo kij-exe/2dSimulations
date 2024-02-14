@@ -28,6 +28,13 @@ class Simulation {
         this.body_list.push(body);
     }
 
+    deleteBody(body_to_delete) {
+        for (let i = 0; i < this.body_list.length; i++) {
+            if (this.body_list[i] == body_to_delete)
+                this.body_list.splice(i, 1);
+        }
+    }
+
     update() {
     }
 }

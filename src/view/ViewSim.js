@@ -11,6 +11,8 @@ class ViewSim {
         this.canvas.width = 800;
         this.canvas.height = 450;
         //   creating the canvas html element
+        this.canvas.style.alignSelf = "start";
+        //   prevent the canvas from stretching
         
         let sim_area = document.getElementById("sim_area" + id);
 
@@ -45,7 +47,7 @@ class ViewSim {
 
     deleteBody(body) {
         for (let i = 0; i < this.body_list.length; i++) {
-            if (this.body_list[i] == body)
+            if (this.body_list[i] == body || this.body_list[i].getBody() == body)
                 this.body_list.splice(i, 1);
         }
     }
