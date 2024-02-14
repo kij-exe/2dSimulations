@@ -440,16 +440,31 @@ class ParticleProjectionIO extends IOHandler {
 
         let choice = parseInt(drop_down.value);
 
+        let add_button = document.getElementById("add_event_button" + this.id);
+
         switch (choice) {
             case -1:
+                add_button.onclick = null;
                 break;
             case 0:
+                //   Position Event
+                add_button.onclick = () => {
+                    this.addPositionEvent();
+                }
                 this.createPositionEventInput();
                 break;
             case 1:
+                //   Velocity Event
+                add_button.onclick = () => {
+                    this.addVelocityEvent();
+                }
                 this.createVelocityEventInput();
                 break;
             case 2:
+                //   Time Event
+                add_button.onclick = () => {
+                    this.addTimeEvent();
+                }
                 this.createTimeEventInput();
                 break;
         }
@@ -555,15 +570,42 @@ class ParticleProjectionIO extends IOHandler {
         condition_container.appendChild(condition_input);
     }
 
-    createAddCancelEventButtons() {
+    createAddCancelEventButtons(event_input) {
         let button_container = document.createElement("div");
         button_container.style.display = "flex";
         
         let add_button = document.createElement("button");
+        add_button.style.flexGrow = "1";
+        add_button.id = "add_event_button" + this.id;
         add_button.innerHTML = "Add";
+        //   onclick will be defined when the drop down is changed 
 
         let cancel_button = document.createElement("button");
+        cancel_button.style.flexGrow = "1";
         cancel_button.innerHTML = "Cancel";
+
+        cancel_button.onclick = () => {
+            event_input.remove();
+        }
+
+        button_container.appendChild(add_button);
+        button_container.appendChild(cancel_button);
+
+        event_input.appendChild(button_container);
+    }
+
+    addPositionEvent() {
+        let x_value = document.getElementById("x_event_condition" + this.id).value;
+        let y_value = document.getElementById("y_event_condition" + this.id).value;
+
+        // particle = 
+    }
+
+    addVelocityEvent() {
+
+    }
+
+    addTimeEvent() {
 
     }
 
