@@ -6,6 +6,10 @@ class ViewBody {
         this.color = color;
     }
 
+    getBody() {
+        return this.body;
+    }
+
     redraw(view) {
     }
 }

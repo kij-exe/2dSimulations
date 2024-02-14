@@ -106,6 +106,7 @@ class Controller {
             }
 
             this.view_list[i].redraw();
+            this.io_list[i].update();
         }
 
         requestAnimationFrame((timestamp) => {

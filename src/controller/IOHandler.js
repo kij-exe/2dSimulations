@@ -16,10 +16,6 @@ class IOHandler {
 
         let sim_area = document.getElementById("sim_area" + this.id);
         this.io_area.style.flexGrow = "1";
-
-        let p = document.createElement("p");
-        p.innerHTML = "text"
-        this.io_area.appendChild(p)
         
         sim_area.appendChild(this.io_area);
         //   put io_area on the screen
