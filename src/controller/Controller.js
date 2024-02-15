@@ -163,6 +163,7 @@ class Controller {
 
     createSimHeader(sim, sim_area, index) {
         let container = document.createElement("div");
+        container.classList.add("container");
         container.style.display = "flex";
         container.style.width = "100%";
 

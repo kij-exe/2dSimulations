@@ -1,25 +1,46 @@
+html {
+    background-color: #b9bfe0;
+    font-size: 13pt;
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+}
+
+select {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
 body * {
-    background-color: rgb(46, 90, 231);
+    background-color: rgb(57 73 140);
     color:aliceblue;
     padding: 5px;
     outline: 2px solid turquoise;
-    font-size: 14pt;
     margin: 5px;
 }
 
 body button {
     width: 36px;
     height: 36px;
-    font-size: 14pt;
+    font-size: inherit;
     text-align: center;
+}
+
+.container {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+
+.filled_container * button {
+    background-color: #23233d;
 }
 
 .title {
     margin-right: auto;
 }
-
-/* .sim_area_button {
-} */
 
 body canvas {
     background-color: whitesmoke;

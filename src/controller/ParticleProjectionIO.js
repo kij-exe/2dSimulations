@@ -25,11 +25,14 @@ class ParticleProjectionIO extends IOHandler {
 
     createParticleArea() {
         let particle_area = document.createElement("div");
+        // particle_area.classList.add("container");
+        particle_area.classList.add("filled_container");
         particle_area.id = "particle_area" + this.id;
 
         this.io_area.appendChild(particle_area);
 
         let container = document.createElement("div");
+        container.classList.add("container");
         container.style.display = "flex";
         particle_area.appendChild(container);
 
@@ -51,6 +54,7 @@ class ParticleProjectionIO extends IOHandler {
 
     createParticleList(particle_area) {
         let particle_list = document.createElement("div");
+        particle_list.classList.add("container");
         particle_list.id = "particle_list" + this.id;
 
         particle_area.appendChild(particle_list);
@@ -318,9 +322,11 @@ class ParticleProjectionIO extends IOHandler {
 
     createEventArea() {
         let event_area = document.createElement("div");
+        event_area.classList.add("container");
         event_area.id = "event_area" + this.id;
 
         let container = document.createElement("div");
+        container.classList.add("container");
         container.style.display = "flex";
 
         let title = document.createElement("p");

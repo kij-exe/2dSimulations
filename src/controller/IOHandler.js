@@ -12,6 +12,7 @@ class IOHandler {
 
     createIOarea() {
         this.io_area = document.createElement("div");
+        this.io_area.classList.add("container");
         //   create an io_area
 
         let sim_area = document.getElementById("sim_area" + this.id);
