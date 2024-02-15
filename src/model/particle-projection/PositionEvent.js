@@ -26,7 +26,7 @@ class PositionEvent extends Event {
             if (x <= 0) 
                 this.occurs_at = -1;
             else
-                this.occurs_at = x * 1000;
+                this.occurs_at = x * 1000 + this.body.createdAt();
             return
         }
 
@@ -49,8 +49,6 @@ class PositionEvent extends Event {
             //   swap x1 and x2 so x2 >= x1
         }
         //   two solutions where x1 <= x2
-
-        console.log(x1, x2);
 
         
         if (x2 <= 0) {

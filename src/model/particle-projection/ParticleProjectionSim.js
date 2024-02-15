@@ -12,6 +12,7 @@ class ParticleProjectionSim extends Simulation {
     }
 
     update(dt) {
+        console.log(dt);
         //   parameter dt denotes the change in time from the previous 
         //   frame 
         this.time += dt;
@@ -19,8 +20,10 @@ class ParticleProjectionSim extends Simulation {
         let event = this.event_queue.peek();
         //   peek the first event from the queue	
         // console.log(dt);
-
+        
+        console.log("seconds now " + this.time/1000)
         if (!this.event_queue.isEmpty() && event.getTime() < this.time) {
+            console.log("event found")
             //   if the time the event occurs is greater than the
             //   current time the simulation is at
             event.execute();
