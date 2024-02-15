@@ -142,7 +142,7 @@ class Controller {
         this.next_id++;
         //   increment id for the next simulation
 
-        this.test(sim, view);
+        // this.test(sim, view);
     }
 
     createSimArea() {

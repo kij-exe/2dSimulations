@@ -2,6 +2,7 @@ import IOHandler from "./IOHandler.js";
 import PointMass from "../model/particle-projection/PointMass.js";
 import Vector from "../utility/Vector.js";
 import ViewPointMass from "../view/ViewPointMass.js";
+import PositionEvent from "../model/particle-projection/PositionEvent.js"
 
 
 class ParticleProjectionIO extends IOHandler {
@@ -598,7 +599,27 @@ class ParticleProjectionIO extends IOHandler {
         let x_value = document.getElementById("x_event_condition" + this.id).value;
         let y_value = document.getElementById("y_event_condition" + this.id).value;
 
-        // particle = 
+        let particle_id = parseInt(document.getElementById("particle_choice" + this.id).value);
+        //   add validations
+        let particle = this.body_list[particle_id];
+
+        let event = new PositionEvent(particle, this, this.next_event_id++);
+
+        if (!isNaN(x_value) && !(x_value === ""))
+            event.setXtime(x_value);
+        else if (!isNaN(y_value) && !(y_value === ""))
+            event.setYtime(y_value);
+        else {
+            console.log("invalid 0");
+            return;
+        }
+
+        if (!event.isValid()) {
+            console.log("invalid");
+            return;
+        }
+
+        this.sim.addEvent(event);
     }
 
     addVelocityEvent() {
@@ -647,6 +668,6 @@ class ParticleProjectionIO extends IOHandler {
 
     // }
 }
-
+//   update event drop-down every time a particle gets deleted or created!!!!!!!!
 
 export {ParticleProjectionIO as default}
