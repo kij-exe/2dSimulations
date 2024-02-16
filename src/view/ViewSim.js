@@ -12,6 +12,7 @@ class ViewSim {
         this.canvas.height = 450;
         //   creating the canvas html element
         this.canvas.style.alignSelf = "start";
+        this.canvas.classList.add("box");
         //   prevent the canvas from stretching
         
         let sim_area = document.getElementById("sim_area" + id);

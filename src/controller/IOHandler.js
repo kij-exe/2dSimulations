@@ -7,7 +7,6 @@ class IOHandler {
         this.view = view;
 
         this.createIOarea();
-        this.initialize();
     }
 
     createIOarea() {
@@ -20,9 +19,6 @@ class IOHandler {
         
         sim_area.appendChild(this.io_area);
         //   put io_area on the screen
-    }
-
-    initialize() {
     }
 }
 
