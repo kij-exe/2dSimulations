@@ -1,0 +1,3 @@
+https://stackoverflow.com/questions/67447944/mathjax-inputs
+
+mathml

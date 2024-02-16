@@ -39,6 +39,7 @@ class Controller {
 
     createSimulationsDropDown() {
         this.select = document.createElement("select");
+        this.select.style.marginRight = "auto";
         //   creating a select element for a dropdown menu
         
         let option = document.createElement("option");
@@ -62,9 +63,9 @@ class Controller {
         //   corresponding simulation in the sim_list and to the
         //   name of its group of classes
 
-        let body_element = document.getElementsByTagName("body")[0];
+        let caption = document.getElementById("caption");
         //   retreive the body tag from the page
-        body_element.appendChild(this.select);
+        caption.appendChild(this.select);
         //   add the drop-down on the page
     }
     
@@ -80,9 +81,9 @@ class Controller {
         //   click on the button will invoke an add_sim function
         //   of the controller with associated index that is selected
 
-        let body_element = document.getElementsByTagName("body")[0];        
+        let caption = document.getElementById("caption");       
         //   retreive the body tag from the page
-        body_element.appendChild(add_sim_button);
+        caption.appendChild(add_sim_button);
     }
 
     startUpdateLoop() {     
@@ -150,8 +151,12 @@ class Controller {
         sim_area.id = "sim_area" + this.next_id.toString();
         //   assigning an identifier to the new simulation area
         
+        sim_area.classList.add("box");
         sim_area.style.display = "flex";
         sim_area.style.flexFlow = "row wrap";
+        sim_area.style.marginTop = "10px";
+        sim_area.style.marginBottom = "10px";
+
         //   sim area styling
 
 	    let body_element = document.getElementsByTagName("body")[0];
