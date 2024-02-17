@@ -23,6 +23,7 @@ class ParticleProjectionIO extends IOHandler {
         this.createParticleArea();
         this.createEventArea();
         // this.createTimeSlider();
+
     }
 
     createParticleArea() {
@@ -127,6 +128,22 @@ class ParticleProjectionIO extends IOHandler {
         position_container.appendChild(y_input);
 
         particle_input.appendChild(position_container);
+
+        // ***
+        position_container.innerHTML = `<math xmlns="http://www.w3.org/1998/Math/MathML">
+                                        <mrow>
+                                            <mo>(</mo>
+                                            <mtable>
+                                                <mtr>
+                                                    <mtd><mi><input/></mi></mtd>
+                                                </mtr>
+                                                <mtr>
+                                                    <mtd><mi>y</mi></mtd>
+                                                </mtr>
+                                            </mtable>
+                                        </mrow>
+                                        <mo>)</mo>
+                                    </math>`;
     }
 
     createVelocityInput(particle_input) {
