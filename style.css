@@ -45,7 +45,7 @@ body button {
 .box {
     margin: 8px 3px 8px 3px;
     padding: 3px;
-    outline: 2px solid #23233d;
+    outline: 2px solid rgb(56 61 109);
 }
 
 .title {
