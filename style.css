@@ -3,69 +3,17 @@ html {
     font-size: 13pt;
     font-family: "Lexend", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 600;
+    font-weight: 500;
     font-style: normal;
 }
 
-select {
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-}
-
-button {
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-}
-
 body * {
-    background-color: rgb(57 73 140);
+    background-color: #39498C;
     color:aliceblue;
-    /* padding: 5px;
-    margin: 2px; */
 }
 
-canvas {
-    outline: 2px solid #10101c;
-    margin-right: 5px;
-}
-
-body button {
-    width: 36px;
-    height: 36px;
-    font-size: inherit;
-    text-align: center;
-}
-
-.filled_container * button {
-    background-color: #23233d;
-}
-
-.box {
-    margin: 8px 3px 8px 3px;
-    padding: 3px;
-    outline: 2px solid rgb(56 61 109);
-}
-
-.title {
-    margin-right: auto;
-}
-
-body canvas {
-    background-color: whitesmoke;
-    padding: 0;
-}
-
-body input {
-    font-size: 12pt;
-    width: 50px;
-}
-
-/* CSS */
 button {
     margin: 3px;
-
     align-items: center;
     appearance: none;
     background-color: #FCFCFD;
@@ -76,7 +24,7 @@ button {
     color: #36395A;
     cursor: pointer;
     display: inline-flex;
-    font-family: "JetBrains Mono",monospace;
+    font-family: "JetBrains Mono", monospace;
     height: 48px;
     justify-content: center;
     line-height: 1;
@@ -94,6 +42,8 @@ button {
     white-space: nowrap;
     will-change: box-shadow,transform;
     font-size: 18px;
+    width: 36px;
+    height: 36px;
 }
 
 button:focus {
@@ -113,5 +63,48 @@ button:active {
 p {
     margin: 3px;
     padding: 3px;
+    align-self: center;
+}
+
+select {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 4px;
+}
+
+.box {
+    margin: 8px 3px 8px 3px;
+    padding: 3px;
+    outline: 2px solid #383D6D;
+}
+
+canvas {
+    background-color: white;
+    outline: 2px solid #383D6D;
+    margin: 8px 3px 8px 5px;
+    padding: 0;
+    /* space before io_area */
+    align-self: "start";
+    /* prevent the canvas from stretching */
+}
+
+body input {
+    font-size: 12pt;
+    width: 50px;
+}
+
+mtd {
+    padding: 2px;
+}
+
+label {
+    margin: 3px;
+    padding: 3px;
+    align-self: center;
+}
+
+input {
+    height: 20px;
     align-self: center;
 }

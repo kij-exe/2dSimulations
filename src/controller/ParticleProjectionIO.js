@@ -3,6 +3,8 @@ import PointMass from "../model/particle-projection/PointMass.js";
 import Vector from "../utility/Vector.js";
 import ViewPointMass from "../view/ViewPointMass.js";
 import PositionEvent from "../model/particle-projection/PositionEvent.js"
+import VelocityEvent from "../model/particle-projection/VelocityEvent.js"
+import TimeEvent from "../model/particle-projection/TimeEvent.js"
 
 
 class ParticleProjectionIO extends IOHandler {
@@ -43,7 +45,7 @@ class ParticleProjectionIO extends IOHandler {
         this.createParticleList(particle_area);
         //   then the particle list area first because
         //   the button will refer to it
-        this.createNewParticleButton(container);
+        this.createParticleMenuButton(container);
         //   then the button is created
     }
 
@@ -61,7 +63,7 @@ class ParticleProjectionIO extends IOHandler {
         particle_area.appendChild(particle_list);
     }
     
-    createNewParticleButton(container) {
+    createParticleMenuButton(container) {
         let button = document.createElement("button");
         button.innerHTML = "<";
 
@@ -89,93 +91,77 @@ class ParticleProjectionIO extends IOHandler {
         particle_area.appendChild(particle_input);
 
         let title = document.createElement("p");
+        title.style.marginRight = "auto";
         title.id = "particle_input_title" + this.id;
-        title.innerHTML = "Particle " + this.next_particle_id;
+        title.innerHTML = "New Particle " + this.next_particle_id;
 
-        particle_input.appendChild(title);
+        let top_container = document.createElement("div");
+        top_container.style.display = "flex";
+        top_container.style.flexFlow = "wrap";
+        top_container.appendChild(title);
 
-        this.createPositionInput(particle_input);
-        this.createVelocityInput(particle_input);
+        particle_input.appendChild(top_container);
+
+        this.createPositionInput(top_container);
+        this.createVelocityInput(top_container);
+
         this.createAddParticleButton(particle_input);
     }
 
-    createPositionInput(particle_input) {
+    createPositionInput(top_container) {
         let position_container = document.createElement("div");
         position_container.style.display = "flex";
-        position_container.style.flexFlow = "row wrap";
     
         let position_title = document.createElement("p");
-        position_title.innerHTML = "Position";
+        position_title.innerHTML = "Position =  ";
 
-        let x_label = document.createElement("label");
-        x_label.innerHTML = "x";
-
-        let x_input = document.createElement("input");
-        x_input.type = "text";
-        x_input.id = "position_x_input" + this.id;
-
-        let y_label = document.createElement("label");
-        y_label.innerHTML = "y";
-
-        let y_input = document.createElement("input");
-        y_input.type = "text";  
-        y_input.id = "position_y_input" + this.id;
+        let column = this.createColumn(
+            "position_x_input" + this.id,
+            "position_y_input" + this.id
+        );
 
         position_container.appendChild(position_title);
-        position_container.appendChild(x_label);
-        position_container.appendChild(x_input);
-        position_container.appendChild(y_label);
-        position_container.appendChild(y_input);
+        position_container.appendChild(column);
 
-        particle_input.appendChild(position_container);
-
-        // ***
-        position_container.innerHTML = `<math xmlns="http://www.w3.org/1998/Math/MathML">
-                                        <mrow>
-                                            <mo>(</mo>
-                                            <mtable>
-                                                <mtr>
-                                                    <mtd><mi><input/></mi></mtd>
-                                                </mtr>
-                                                <mtr>
-                                                    <mtd><mi>y</mi></mtd>
-                                                </mtr>
-                                            </mtable>
-                                        </mrow>
-                                        <mo>)</mo>
-                                    </math>`;
+        top_container.appendChild(position_container);
     }
 
-    createVelocityInput(particle_input) {
+    createVelocityInput(top_container) {
         let velocity_container = document.createElement("div");
         velocity_container.style.display = "flex";
-        velocity_container.style.flexFlow = "row wrap";
     
         let velocity_title = document.createElement("p");
-        velocity_title.innerHTML = "Velocity";
+        velocity_title.innerHTML = "Velocity = ";
 
-        let x_label = document.createElement("label");
-        x_label.innerHTML = "x";
-
-        let x_input = document.createElement("input");
-        x_input.type = "text";
-        x_input.id = "velocity_x_input" + this.id;
-
-        let y_label = document.createElement("label");
-        y_label.innerHTML = "y";
-
-        let y_input = document.createElement("input");
-        y_input.type = "text";  
-        y_input.id = "velocity_y_input" + this.id;
+        let column = this.createColumn(
+            "velocity_x_input" + this.id,
+            "velocity_y_input" + this.id
+        )
 
         velocity_container.appendChild(velocity_title);
-        velocity_container.appendChild(x_label);
-        velocity_container.appendChild(x_input);
-        velocity_container.appendChild(y_label);
-        velocity_container.appendChild(y_input);
+        velocity_container.appendChild(column);
 
-        particle_input.appendChild(velocity_container);
+        top_container.appendChild(velocity_container);
 
+    }
+
+    createColumn(top_id, bottom_id) {
+        let column = document.createElement("div");
+        column.innerHTML = `<math xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mrow>
+                                    <mo>(</mo>
+                                    <mtable>
+                                        <mtr>
+                                            <mtd><mi><input id="${top_id}"/></mi></mtd>
+                                        </mtr>
+                                        <mtr>
+                                            <mtd><mi><input id="${bottom_id}"/></mi></mtd>
+                                        </mtr>
+                                    </mtable>
+                                    <mo>)</mo>
+                                </mrow>
+                            </math>`
+        return column;
     }
     
     createAddParticleButton(particle_input) {
@@ -225,73 +211,70 @@ class ParticleProjectionIO extends IOHandler {
         //   because new particle has been added
 
         let particle_input_title = document.getElementById("particle_input_title" + this.id);
-        particle_input_title.innerHTML = "Particle " + this.next_particle_id;
+        particle_input_title.innerHTML = "New Particle " + this.next_particle_id;
     }
 
     createParticleOutput(particle) {
         let particle_list = document.getElementById("particle_list" + this.id);
 
-        let container = document.createElement("div");
-        container.classList.add("box");
-        container.style.display = "flex";
+        let output_container = document.createElement("div");
+        output_container.classList.add("box");
+
+        let top_container = document.createElement("div");
+        top_container.style.display = "flex";
 
         let title = document.createElement("p");
+        title.style.marginRight = "auto";
         title.innerHTML = "Particle " + particle.getId();
-        container.appendChild(title);
+        top_container.appendChild(title);
 
-        this.createPositionOutput(container, particle.getId());
-        this.createVelocityOutput(container, particle.getId());
+        this.createPositionOutput(top_container, particle.getId());
+        this.createVelocityOutput(top_container, particle.getId());
 
-        particle_list.appendChild(container);
+        output_container.appendChild(top_container);
 
-        this.createRemoveButton(container, particle.getId());
+        particle_list.appendChild(output_container);
+
+        this.createRemoveButton(output_container, particle.getId());
     }
 
-    createPositionOutput(output_container, particle_id) {
+    createPositionOutput(top_container, particle_id) {
         let position_ouput = document.createElement("div");
         position_ouput.style.display = "flex";
 
-        let x_label = document.createElement("label");
-        x_label.innerHTML = "x";
-        let y_label = document.createElement("label");
-        y_label.innerHTML = "y";
+        let position_title = document.createElement("p");
+        position_title.innerHTML = "Position = ";
 
-        let x_value = document.createElement("p");
-        x_value.id = "position_x_value" + particle_id + "_" + this.id;
-        let y_value = document.createElement("p");
-        y_value.id = "position_y_value" + particle_id + "_" + this.id;
+        let column = this.createColumn(
+            "position_x_value" + particle_id + "_" + this.id,
+            "position_y_value" + particle_id + "_" + this.id
+        );
 
-        position_ouput.appendChild(x_label);
-        position_ouput.appendChild(x_value);
-        position_ouput.appendChild(y_label);
-        position_ouput.appendChild(y_value);
+        position_ouput.appendChild(position_title);
+        position_ouput.appendChild(column);
 
-        output_container.appendChild(position_ouput);
+        top_container.appendChild(position_ouput);
     }
 
-    createVelocityOutput(output_container, particle_id) {
+    createVelocityOutput(top_container, particle_id) {
         let velocity_ouput = document.createElement("div");
         velocity_ouput.style.display = "flex";
 
-        let x_label = document.createElement("label");
-        x_label.innerHTML = "x";
-        let y_label = document.createElement("label");
-        y_label.innerHTML = "y";
+        let velocity_title = document.createElement("p");
+        velocity_title.innerHTML = "Velocity = ";
 
-        let x_value = document.createElement("p");
-        x_value.id = "velocity_x_value" + particle_id + "_" + this.id;
-        let y_value = document.createElement("p");
-        y_value.id = "velocity_y_value" + particle_id + "_" + this.id;
-        
-        velocity_ouput.appendChild(x_label);
-        velocity_ouput.appendChild(x_value);
-        velocity_ouput.appendChild(y_label);
-        velocity_ouput.appendChild(y_value);
+        let column = this.createColumn(
+            "velocity_x_value" + particle_id + "_" + this.id,
+            "velocity_y_value" + particle_id + "_" + this.id
+        );
 
-        output_container.appendChild(velocity_ouput);
+        velocity_ouput.appendChild(velocity_title);
+        velocity_ouput.appendChild(column);
+
+        top_container.appendChild(velocity_ouput);
     }
 
-    createRemoveButton(container, particle_id) {
+    createRemoveButton(output_container, particle_id) {
         let button = document.createElement("button");
         button.style.width = "100px";
         //   temporary
@@ -306,11 +289,11 @@ class ParticleProjectionIO extends IOHandler {
             this.resetParticleChoice();
             //   reset a particle drop down
 
-            container.remove();
+            output_container.remove();
             button.remove();
         }
         
-        container.appendChild(button);
+        output_container.appendChild(button);
     }
 
     update() {
@@ -328,8 +311,8 @@ class ParticleProjectionIO extends IOHandler {
 
         let position = particle.getPosition();
 
-        x_value.innerHTML = Math.trunc(position.x * 1000) / 1000;
-        y_value.innerHTML = Math.trunc(position.y * 1000) / 1000;
+        x_value.value = Math.trunc(position.x * 1000) / 1000;
+        y_value.value = Math.trunc(position.y * 1000) / 1000;
     }
 
     updateVelocityOutput(particle) {
@@ -338,8 +321,8 @@ class ParticleProjectionIO extends IOHandler {
 
         let velocity = particle.getVelocity();
 
-        x_value.innerHTML = Math.trunc(velocity.x * 1000) / 1000;
-        y_value.innerHTML = Math.trunc(velocity.y * 1000) / 1000;
+        x_value.value = Math.trunc(velocity.x * 1000) / 1000;
+        y_value.value = Math.trunc(velocity.y * 1000) / 1000;
     }
 
     createEventArea() {
@@ -365,15 +348,16 @@ class ParticleProjectionIO extends IOHandler {
 
         this.createEventInput(event_area);
 
-        this.createNewEventButton(container);
+        this.createEventMenuButton(container);
     }
 
-    createNewEventButton(container) {
+    createEventMenuButton(container) {
         let button = document.createElement("button");
         button.innerHTML = "<";
 
         button.onclick = () => {
             let event_input = document.getElementById("event_input" + this.id);
+            let event_title = document.getElementById("event_title" + this.id);
 
             if (event_input.style.display == "none") {
                 event_input.style.display = "block";
@@ -395,6 +379,7 @@ class ParticleProjectionIO extends IOHandler {
         event_input.id = "event_input" + this.id;
 
         let title = document.createElement("p");
+        title.id = "next_event_title" + this.id;
         title.innerHTML = "Event " + this.next_event_id;
         event_input.appendChild(title);
 
@@ -406,22 +391,20 @@ class ParticleProjectionIO extends IOHandler {
         event_input.appendChild(particle_drop_down);
         //   create the drop-down for a particle
 
-        let condition = document.createElement("p");
-        condition.innerHTML = "Condition";
-        event_input.appendChild(condition);
-
-        let condition_container = document.createElement("div");
-        condition_container.id = "condition_container" + this.id;
-        event_input.appendChild(condition_container);
-        //   a container where condition input will reside
-        //   created before actual conditions for 
-        //   the buttons to be below conditions
+        let condition_title = document.createElement("p");
+        condition_title.innerHTML = "Condition";
+        event_input.appendChild(condition_title);
 
         event_area.appendChild(event_input);
 
         this.resetParticleChoice();
         //   reset particle drop-down
 
+
+        this.createPositionEventInput(event_input);
+        this.createVelocityEventInput(event_input);
+        this.createTimeEventInput(event_input);
+        
         this.createAddEventButton(event_input);
     }
 
@@ -448,12 +431,11 @@ class ParticleProjectionIO extends IOHandler {
         event_input.appendChild(drop_down);
 
         drop_down.onchange = () => {
-            this.createConditionInput(drop_down);
+            this.toggleCondition(drop_down);
         }
     }
 
     resetParticleChoice() {
-        console.log("www")
         let drop_down = document.getElementById("particle_choice" + this.id);
 
         drop_down.innerHTML = "";
@@ -475,51 +457,56 @@ class ParticleProjectionIO extends IOHandler {
         }
     }
 
-    createConditionInput(drop_down) {
-        let condition_input = document.getElementById("condition_input" + this.id);
-        if (condition_input != undefined)
-            condition_input.remove();
+    toggleCondition(drop_down) {
+        let choice = drop_down.value;
+        let position_condition = document.getElementById("position_condition" + this.id);
+        let velocity_condition = document.getElementById("velocity_condition" + this.id);
+        let time_condition = document.getElementById("time_condition" + this.id);
 
-        let choice = parseInt(drop_down.value);
+        for (let condition of [position_condition, velocity_condition, time_condition])
+            condition.style.display = "none";
+        //   turn off every condition input
 
         let add_button = document.getElementById("add_event_button" + this.id);
 
         switch (choice) {
-            case -1:
+            case "-1":
                 add_button.onclick = null;
                 break;
-            case 0:
+            case "0":
                 //   Position Event
+                position_condition.style.display = "flex";
                 add_button.onclick = () => {
                     this.addPositionEvent();
                 }
-                this.createPositionEventInput();
                 break;
-            case 1:
+            case "1":
                 //   Velocity Event
+                velocity_condition.style.display = "flex";
                 add_button.onclick = () => {
                     this.addVelocityEvent();
                 }
-                this.createVelocityEventInput();
                 break;
-            case 2:
+            case "2":
                 //   Time Event
+                time_condition.style.display = "flex";
                 add_button.onclick = () => {
                     this.addTimeEvent();
                 }
-                this.createTimeEventInput();
                 break;
         }
     }
 
-    createPositionEventInput() {
-        let condition_container = document.getElementById("condition_container" + this.id);
-        
-        let condition_input = document.createElement("div");
-        condition_input.id = "condition_input" + this.id;
-        condition_input.style.display = "flex";
+    resetNextEventTitle() {
+        let title = document.getElementById("next_event_title" + this.id);
+        title.innerHTML = "Event " + this.next_event_id;
+    }
 
-        let x_input_container = document.createElement("div");
+    createPositionEventInput(event_input) {
+        let condition_container = document.createElement("div");
+        condition_container.id = "position_condition" + this.id;
+        condition_container.style.display = "none";
+
         let x_label = document.createElement("label");
         x_label.innerHTML = "x";
         
@@ -527,12 +514,9 @@ class ParticleProjectionIO extends IOHandler {
         x_input.type = "text";
         x_input.id = "x_event_condition" + this.id;
 
-        x_input_container.appendChild(x_label);
-        x_input_container.appendChild(x_input);
+        condition_container.appendChild(x_label);
+        condition_container.appendChild(x_input);
 
-        condition_input.appendChild(x_input_container);
-
-        let y_input_container = document.createElement("div");
         let y_label = document.createElement("label");
         y_label.innerHTML = "y";
         
@@ -540,22 +524,17 @@ class ParticleProjectionIO extends IOHandler {
         y_input.type = "text";
         y_input.id = "y_event_condition" + this.id;
 
-        y_input_container.appendChild(y_label);
-        y_input_container.appendChild(y_input);
+        condition_container.appendChild(y_label);
+        condition_container.appendChild(y_input);
 
-        condition_input.appendChild(y_input_container);
-
-        condition_container.appendChild(condition_input);
+        event_input.appendChild(condition_container);
     }
 
-    createVelocityEventInput() {
-        let condition_container = document.getElementById("condition_container" + this.id);
-        
-        let condition_input = document.createElement("div");
-        condition_input.id = "condition_input" + this.id;
-        condition_input.style.display = "flex";
+    createVelocityEventInput(event_input) {
+        let condition_container = document.createElement("div");
+        condition_container.id = "velocity_condition" + this.id;
+        condition_container.style.display = "none";
 
-        let x_input_container = document.createElement("div");
         let x_label = document.createElement("label");
         x_label.innerHTML = "vx";
         
@@ -563,12 +542,9 @@ class ParticleProjectionIO extends IOHandler {
         x_input.type = "text";
         x_input.id = "vx_event_condition" + this.id;
 
-        x_input_container.appendChild(x_label);
-        x_input_container.appendChild(x_input);
+        condition_container.appendChild(x_label);
+        condition_container.appendChild(x_input);
 
-        condition_input.appendChild(x_input_container);
-
-        let y_input_container = document.createElement("div");
         let y_label = document.createElement("label");
         y_label.innerHTML = "vy";
         
@@ -576,23 +552,18 @@ class ParticleProjectionIO extends IOHandler {
         y_input.type = "text";
         y_input.id = "vy_event_condition" + this.id;
 
-        y_input_container.appendChild(y_label);
-        y_input_container.appendChild(y_input);
+        condition_container.appendChild(y_label);
+        condition_container.appendChild(y_input);
 
-        condition_input.appendChild(y_input_container);
-
-        condition_container.appendChild(condition_input);
+        event_input.appendChild(condition_container);
     }
     //   x -> vx, y -> vy
 
-    createTimeEventInput() {
-        let condition_container = document.getElementById("condition_container" + this.id);
-        
-        let condition_input = document.createElement("div");
-        condition_input.id = "condition_input" + this.id;
-        condition_input.style.display = "flex";
+    createTimeEventInput(event_input) {
+        let condition_container = document.createElement("div");
+        condition_container.id = "time_condition" + this.id;
+        condition_container.style.display = "none";
 
-        let time_input_container = document.createElement("div");
         let label_start = document.createElement("label");
         label_start.innerHTML = "Stop after";
         
@@ -603,13 +574,11 @@ class ParticleProjectionIO extends IOHandler {
         time_input.type = "text";
         time_input.id = "time_event_condition" + this.id;
 
-        time_input_container.appendChild(label_start);
-        time_input_container.appendChild(time_input);
-        time_input_container.appendChild(label_finish);
+        condition_container.appendChild(label_start);
+        condition_container.appendChild(time_input);
+        condition_container.appendChild(label_finish);
 
-        condition_input.appendChild(time_input_container);
-
-        condition_container.appendChild(condition_input);
+        event_input.appendChild(condition_container);
     }
 
     createAddEventButton(event_input) {
@@ -620,7 +589,7 @@ class ParticleProjectionIO extends IOHandler {
         add_button.style.flexGrow = "1";
         add_button.id = "add_event_button" + this.id;
         add_button.innerHTML = "Add";
-        //   onclick will be defined when the drop down is changed 
+        //   onclick is defined when event type is chosen
 
         button_container.appendChild(add_button);
 
@@ -635,12 +604,12 @@ class ParticleProjectionIO extends IOHandler {
         //   add validations
         let particle = this.body_list[particle_id];
 
-        let event = new PositionEvent(particle, this, this.next_event_id++);
+        let event = new PositionEvent(particle, this, this.next_event_id);
 
         if (!isNaN(x_value) && !(x_value === ""))
-            event.setXtime(x_value);
+            event.setXtime(parseInt(x_value));
         else if (!isNaN(y_value) && !(y_value === ""))
-            event.setYtime(y_value);
+            event.setYtime(parseInt(y_value));
         else {
             console.log("invalid 0");
             return;
@@ -652,14 +621,67 @@ class ParticleProjectionIO extends IOHandler {
         }
 
         this.sim.addEvent(event);
+
+        this.next_event_id++;
+        this.resetNextEventTitle();
     }
 
     addVelocityEvent() {
+        let x_value = document.getElementById("vx_event_condition" + this.id).value;
+        let y_value = document.getElementById("vy_event_condition" + this.id).value;
 
+        let particle_id = parseInt(document.getElementById("particle_choice" + this.id).value);
+        //   add validations
+        let particle = this.body_list[particle_id];
+
+        let event = new VelocityEvent(particle, this, this.next_event_id);
+
+        if (!isNaN(x_value) && !(x_value === ""))
+            event.setXtime(parseInt(x_value));
+        else if (!isNaN(y_value) && !(y_value === ""))
+            event.setYtime(parseInt(y_value));
+        else {
+            console.log("invalid 0");
+            return;
+        }
+
+        if (!event.isValid()) {
+            console.log("invalid");
+            return;
+        }
+
+        this.sim.addEvent(event);
+
+        this.next_event_id++;
+        this.resetNextEventTitle();
+
+        this.next_event_id++;
+        this.resetNextEventTitle();
     }
 
     addTimeEvent() {
+        let time = document.getElementById("time_event_condition" + this.id).value;
 
+        let particle_id = parseInt(document.getElementById("particle_choice" + this.id).value);
+        //   add validations
+        let particle = this.body_list[particle_id];
+
+        let event = new TimeEvent(particle, this, this.next_event_id);
+
+        if (isNaN(time) || (time === ""))
+            return;
+        
+        event.setTime(time);
+
+        if (!event.isValid()) {
+            console.log("invalid");
+            return;
+        }
+
+        this.sim.addEvent(event);
+
+        this.next_event_id++;
+        this.resetNextEventTitle();
     }
 
 

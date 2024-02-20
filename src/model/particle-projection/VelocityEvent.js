@@ -8,8 +8,8 @@ class VelocityEvent extends Event {
     }
 
     calculateTime(value, axis) {
-        b = this.body.getAcceleration().dot(axis);
-        c = this.body.getInitialVelocity().dot(axis) - value;
+        let b = this.body.getAcceleration().dot(axis);
+        let c = this.body.getInitialVelocity().dot(axis) - value;
         //   calculating coefficients for the equation
         //   bx + c = 0
 
@@ -23,7 +23,7 @@ class VelocityEvent extends Event {
         if (x <= 0) 
             this.occurs_at = -1;
         else
-            this.occurs_at = x;
+            this.occurs_at = x * 1000 + this.body.createdAt();
     }
 
     setXtime(value) {

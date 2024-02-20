@@ -6,8 +6,8 @@ class TimeEvent extends Event {
         super(body, io_handler, event_id);
     }
 
-    setTime(time) {
-        this.occurs_at = time;
+    setTime(time, current_time) {
+        this.occurs_at = time * 1000 + current_time;
     }
 }
 

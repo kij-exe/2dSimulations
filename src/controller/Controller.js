@@ -10,6 +10,7 @@ import Vector from "../utility/Vector.js";
 import ViewPointMass from "../view/ViewPointMass.js";
 import TimeEvent from "../model/particle-projection/TimeEvent.js";
 import PositionEvent from "../model/particle-projection/PositionEvent.js";
+import VelocityEvent from "../model/particle-projection/VelocityEvent.js";
 
 
 class Controller {
@@ -35,6 +36,8 @@ class Controller {
         this.createAddSimButton();
 
         this.startUpdateLoop();
+
+        // this.test();
     }
 
     createSimulationsDropDown() {
@@ -141,9 +144,7 @@ class Controller {
         //   creating ViewSim and IOHandler objects
 
         this.next_id++;
-        //   increment id for the next simulation
-
-        // this.test(sim, view);
+        //   increment id for the next simulation;
     }
 
     createSimArea() {
@@ -168,13 +169,12 @@ class Controller {
 
     createSimHeader(sim, sim_area, index) {
         let container = document.createElement("div");
-        container.classList.add("container");
         container.style.display = "flex";
         container.style.width = "100%";
 
         let title = document.createElement("p");
         title.innerHTML = this.sim_names[index];
-        title.classList.add("title");
+        title.style.marginRight = "auto";
         //   creating a title paragraph html tag and setting its 
         //   content to the name of the new simulation being added
         container.appendChild(title);
@@ -240,21 +240,16 @@ class Controller {
         }
     }
 
-    test(sim, view) {
-        let particle = new PointMass(
-            new Vector(),
-            new Vector(13*Math.cos(Math.PI/6), 13*Math.sin(Math.PI/6)),
-            new Vector(0, -9.8),
-            sim.getTime()
-        ); 
-        let view_particle = new ViewPointMass(particle, "black");
-        sim.addBody(particle);
-        view.addBody(view_particle);
+    test() {
+        let body = document.getElementsByTagName("body")[0];
+
+        let testTag = document.createElement("p");
+        testTag.style.padding = "5px";
+        testTag.style.outline = "2px solid rgb(56 61 109)";
+        testTag.style.marginTop = "30px";
+        testTag.innerHTML = "Text with this colour scheme";
         
-        let event = new PositionEvent(particle, null, null);
-        event.setYtime(0);
-        console.log(event.getTime());
-        sim.addEvent(event);
+        body.appendChild(testTag);
     }
 }
 
