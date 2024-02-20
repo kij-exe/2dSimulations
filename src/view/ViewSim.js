@@ -8,12 +8,11 @@ class ViewSim {
         // initialising set of attributes to their initial values
 
         this.canvas = document.createElement("canvas");
+        //   creating the canvas html element
         this.canvas.width = 800;
         this.canvas.height = 450;
-        //   creating the canvas html element
-        this.canvas.style.alignSelf = "start";
-        this.canvas.classList.add("box");
-        //   prevent the canvas from stretching
+        //   width and height must be assigned in JS
+        //   so the graphics is not stretched to fit the space
         
         let sim_area = document.getElementById("sim_area" + id);
 
