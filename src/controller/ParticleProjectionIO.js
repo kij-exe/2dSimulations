@@ -684,26 +684,6 @@ class ParticleProjectionIO extends IOHandler {
         this.resetNextEventTitle();
     }
 
-
-
-    // createParticleArea() {
-    //     let particle_area = document.createElement("div");
-    //     let title =  document.createElement("p");
-    //     title.innerHTML = "list of particles";
-
-    //     particle_area.appendChild(title);
-        // create dedicated section on the I/O area
-        // put the “List of particles” title on the section
-        // create particle list section on the particle area
-        // //   this section is dedicated for the list of particle which is 
-        // //   initially empty
-        // create the “add_particle_button”
-        // “add_particle_button” listen for the click
-        //     invoke this.addParticle() function on click
-        // //   this function starts the process of adding a new particle 
-    
-    // }
-
     // createEventArea() {
         // create dedicated section on the I/O area
         // put the drop-down list on the section
