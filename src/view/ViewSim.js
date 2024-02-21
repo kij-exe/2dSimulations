@@ -13,6 +13,8 @@ class ViewSim {
         this.canvas.height = 450;
         //   width and height must be assigned in JS
         //   so the graphics is not stretched to fit the space
+        this.canvas.style.alignSelf = "start";
+        //   prevent the canvas from stretching
         
         let sim_area = document.getElementById("sim_area" + id);
 
