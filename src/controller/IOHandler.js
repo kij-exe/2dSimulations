@@ -1,24 +1,24 @@
 
 
 class IOHandler {
-    constructor(id, sim, view) {
+    constructor(id, sim, view, io_canvas_container) {
         this.id = id;
         this.sim = sim;
         this.view = view;
+        console.log(io_canvas_container);
 
-        this.createIOarea();
+        this.createIOarea(io_canvas_container);
     }
 
-    createIOarea() {
+    createIOarea(io_canvas_container) {
         this.io_area = document.createElement("div");
         this.io_area.classList.add("container");
-        //   create an io_area
-
-        let sim_area = document.getElementById("sim_area" + this.id);
+        // this.io_area.style.display = "flex";
         this.io_area.style.flexGrow = "1";
+        //   create an io_area
         
-        sim_area.appendChild(this.io_area);
-        //   put io_area on the screen
+        io_canvas_container.appendChild(this.io_area);
+        //   put io_area on the page
     }
 }
 
