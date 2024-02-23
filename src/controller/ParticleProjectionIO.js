@@ -8,8 +8,8 @@ import TimeEvent from "../model/particle-projection/TimeEvent.js"
 
 
 class ParticleProjectionIO extends IOHandler {
-    constructor(id, sim, view) {
-        super(id, sim, view)
+    constructor(id, sim, view, io_canvas_container) {
+        super(id, sim, view, io_canvas_container)
 
         this.next_particle_id = 0;
         this.next_event_id = 0;
@@ -22,6 +22,26 @@ class ParticleProjectionIO extends IOHandler {
     }
 
     initialize() {
+        this.INCORRECT_TYPE_ERROR = `
+        Input values must be real numbers with a decimal part separated 
+        by the dot (not comma) or in the format Xe+/-Y for 
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <mrow>
+                <mi>X</mi>
+                <mo>*</mo>
+                <msup>
+                    <mi>10</mi>
+                    <mrow>
+                        <mo>+/-</mo>
+                        <mi>Y</mi>
+                    </mrow>
+                </msup>
+            </mrow>
+        </math>
+        `;
+        this.OUT_OF_RANGE_VALUES  = "Input values must be between -10000 and 10000";
+        this.INVALID_EVENT_ERROR = "Such event will never occur";
+        
         this.createParticleArea();
         this.createEventArea();
         // this.createTimeSlider();
@@ -31,44 +51,40 @@ class ParticleProjectionIO extends IOHandler {
     createParticleArea() {
         let particle_area = document.createElement("div");
         particle_area.id = "particle_area" + this.id;
+        particle_area.style.flexGrow = "1";
 
         this.io_area.appendChild(particle_area);
 
-        let container = document.createElement("div");
-        container.style.display = "flex";
-        particle_area.appendChild(container);
+        let header_container = document.createElement("div");
+        header_container.style.display = "flex";
+        //   header container
+        particle_area.appendChild(header_container);
 
-        this.createAreaTitle(container);
-        //   first the title is created
-        this.createParticleInput(particle_area);
-        //   create an input area
-        this.createParticleList(particle_area);
-        //   then the particle list area first because
-        //   the button will refer to it
-        this.createParticleMenuButton(container);
-        //   then the button is created
-    }
-
-    createAreaTitle(container) {
         let title = document.createElement("p");
         title.style.marginRight = "auto";
         title.innerHTML = "List of particles";
-        container.appendChild(title);
-    }
+        header_container.appendChild(title);
+        //   first the title is created
+        
+        this.createParticleMenuButton(header_container);
+        //   then the button is created
 
-    createParticleList(particle_area) {
+        this.createParticleInput(particle_area);
+        //   create an input area
+
         let particle_list = document.createElement("div");
         particle_list.id = "particle_list" + this.id;
-
         particle_area.appendChild(particle_list);
+        //   then the particle list area
     }
     
-    createParticleMenuButton(container) {
+    createParticleMenuButton(header_container) {
         let button = document.createElement("button");
         button.innerHTML = "<";
 
         button.onclick = () => {
             let particle_input = document.getElementById("particle_input" + this.id);
+
             if (particle_input.style.display == "none") {
                 button.innerHTML = "v";
                 particle_input.style.display = "block";
@@ -77,9 +93,11 @@ class ParticleProjectionIO extends IOHandler {
                 button.innerHTML = "<";
                 particle_input.style.display = "none";
             }
+            //   toggles particle_input display
+            //   between none and block
         }
 
-        container.appendChild(button);
+        header_container.appendChild(button);
     }
 
     createParticleInput(particle_area) {
@@ -87,6 +105,7 @@ class ParticleProjectionIO extends IOHandler {
         particle_input.classList.add("box");
         particle_input.style.display = "none";
         particle_input.id = "particle_input" + this.id;
+        //   particle input area
 
         particle_area.appendChild(particle_input);
 
@@ -94,24 +113,39 @@ class ParticleProjectionIO extends IOHandler {
         title.style.marginRight = "auto";
         title.id = "particle_input_title" + this.id;
         title.innerHTML = "New Particle " + this.next_particle_id;
+        //   title for the area
+        //   it must be updated every time new Particle is added
 
         let top_container = document.createElement("div");
         top_container.style.display = "flex";
         top_container.style.flexFlow = "wrap";
         top_container.appendChild(title);
+        //   container for the title and inputs
+        //   it separates them from the button
 
         particle_input.appendChild(top_container);
 
         this.createPositionInput(top_container);
         this.createVelocityInput(top_container);
+        //   creating inputs for position and velocity
 
         this.createAddParticleButton(particle_input);
+        //   button that adds new particles
+
+        let error_message = document.createElement("p");
+        error_message.id = "particle_error_message" + this.id;
+        error_message.innerHTML = this.INCORRECT_TYPE_ERROR;
+        error_message.style.display = "none";
+        error_message.classList.add("error_message");
+        particle_input.appendChild(error_message);
+        //   element to indicate an input error
     }
 
     createPositionInput(top_container) {
         let position_container = document.createElement("div");
         position_container.style.display = "flex";
-    
+        //   a container for all position input
+
         let position_title = document.createElement("p");
         position_title.innerHTML = "Position =  ";
 
@@ -119,6 +153,7 @@ class ParticleProjectionIO extends IOHandler {
             "position_x_input" + this.id,
             "position_y_input" + this.id
         );
+        //   column input
 
         position_container.appendChild(position_title);
         position_container.appendChild(column);
@@ -147,31 +182,34 @@ class ParticleProjectionIO extends IOHandler {
 
     createColumn(top_id, bottom_id) {
         let column = document.createElement("div");
-        column.innerHTML = `<math xmlns="http://www.w3.org/1998/Math/MathML">
-                                <mrow>
-                                    <mo>(</mo>
-                                    <mtable>
-                                        <mtr>
-                                            <mtd><mi><input id="${top_id}"/></mi></mtd>
-                                        </mtr>
-                                        <mtr>
-                                            <mtd><mi><input id="${bottom_id}"/></mi></mtd>
-                                        </mtr>
-                                    </mtable>
-                                    <mo>)</mo>
-                                </mrow>
-                            </math>`
+        column.innerHTML = `
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <mrow>
+                <mo>(</mo>
+                <mtable>
+                    <mtr>
+                        <mtd><mi><input id="${top_id}"/></mi></mtd>
+                    </mtr>
+                    <mtr>
+                        <mtd><mi><input id="${bottom_id}"/></mi></mtd>
+                    </mtr>
+                </mtable>
+                <mo>)</mo>
+            </mrow>
+        </math>
+        `
         return column;
     }
     
     createAddParticleButton(particle_input) {
         let container = document.createElement("div");
         container.style.display = "flex";
-        container.style.justifyContent = "space-between";
+        //   flex container for a button to extend
 
         let add_button = document.createElement("button");
         add_button.innerHTML = "Add";
         add_button.style.flexGrow = "1";
+        //   allows button to take up all space
         add_button.onclick = () => {
             this.addParticle();
         }
@@ -179,32 +217,51 @@ class ParticleProjectionIO extends IOHandler {
         container.appendChild(add_button);
 
         particle_input.appendChild(container);
-        
     }
 
     addParticle() {
-        let position_x = document.getElementById("position_x_input" + this.id).value;
-        let position_y = document.getElementById("position_y_input" + this.id).value;
-        let velocity_x = document.getElementById("velocity_x_input" + this.id).value;
-        let velocity_y = document.getElementById("velocity_y_input" + this.id).value;
+        let position_x = parseFloat(document.getElementById("position_x_input" + this.id).value);
+        let position_y = parseFloat(document.getElementById("position_y_input" + this.id).value);
+        let velocity_x = parseFloat(document.getElementById("velocity_x_input" + this.id).value);
+        let velocity_y = parseFloat(document.getElementById("velocity_y_input" + this.id).value);
+        //   retrieve values from inputs 
+        
+        let error_message = document.getElementById("particle_error_message" + this.id);
 
-        // validations to add
+        for (let value of [position_x, position_y, velocity_x, velocity_y]) {
+            if (isNaN(value)) {
+                error_message.innerHTML = this.INCORRECT_TYPE_ERROR;
+                error_message.style.display = "block";
+                return;
+            }
+            
+            if (value < -10000 || value > 10000) {
+                error_message.innerHTML = this.OUT_OF_RANGE_VALUES;
+                error_message.style.display = "block";
+                return;
+            }
+        }
+        //   validations
 
         let particle = new PointMass(
-            new Vector(parseInt(position_x), parseInt(position_y)),
-            new Vector(parseInt(velocity_x), parseInt(velocity_y)),
+            new Vector(position_x, position_y),
+            new Vector(velocity_x, velocity_y),
             new Vector(0, -9.8),
             this.sim.getTime(),
-            this.next_particle_id++
+            this.next_particle_id++ //  get and increment at the same time
         );
+        //   initialise new particle
+
         this.sim.addBody(particle);
 
-        let view_particle = new ViewPointMass(particle, "red");
+        let view_particle = new ViewPointMass(particle, "black");
         this.view.addBody(view_particle);
 
         this.body_list.push(particle);
+        //   add the particle to io_list's own body_list
 
         this.createParticleOutput(particle);
+        //   create an output window for the particle
 
         this.resetParticleChoice();
         //   reset the select element for the events
@@ -212,6 +269,10 @@ class ParticleProjectionIO extends IOHandler {
 
         let particle_input_title = document.getElementById("particle_input_title" + this.id);
         particle_input_title.innerHTML = "New Particle " + this.next_particle_id;
+        //   update title for the next particle
+
+        error_message.style.display = "none";
+        //   hide error message when particle is added successfully
     }
 
     createParticleOutput(particle) {
@@ -219,9 +280,11 @@ class ParticleProjectionIO extends IOHandler {
 
         let output_container = document.createElement("div");
         output_container.classList.add("box");
+        //   container for an output block
 
         let top_container = document.createElement("div");
         top_container.style.display = "flex";
+        //   container for a title and button
 
         let title = document.createElement("p");
         title.style.marginRight = "auto";
@@ -230,17 +293,20 @@ class ParticleProjectionIO extends IOHandler {
 
         this.createPositionOutput(top_container, particle.getId());
         this.createVelocityOutput(top_container, particle.getId());
+        //   creating outputs for each property
 
         output_container.appendChild(top_container);
 
         particle_list.appendChild(output_container);
 
         this.createRemoveButton(output_container, particle.getId());
+        //   button to remove the particle after it is added
     }
 
     createPositionOutput(top_container, particle_id) {
-        let position_ouput = document.createElement("div");
-        position_ouput.style.display = "flex";
+        let position_output = document.createElement("div");
+        position_output.style.display = "flex";
+        //   container for an output block
 
         let position_title = document.createElement("p");
         position_title.innerHTML = "Position = ";
@@ -250,15 +316,15 @@ class ParticleProjectionIO extends IOHandler {
             "position_y_value" + particle_id + "_" + this.id
         );
 
-        position_ouput.appendChild(position_title);
-        position_ouput.appendChild(column);
+        position_output.appendChild(position_title);
+        position_output.appendChild(column);
 
-        top_container.appendChild(position_ouput);
+        top_container.appendChild(position_output);
     }
 
     createVelocityOutput(top_container, particle_id) {
-        let velocity_ouput = document.createElement("div");
-        velocity_ouput.style.display = "flex";
+        let position_output = document.createElement("div");
+        position_output.style.display = "flex";
 
         let velocity_title = document.createElement("p");
         velocity_title.innerHTML = "Velocity = ";
@@ -268,32 +334,10 @@ class ParticleProjectionIO extends IOHandler {
             "velocity_y_value" + particle_id + "_" + this.id
         );
 
-        velocity_ouput.appendChild(velocity_title);
-        velocity_ouput.appendChild(column);
+        position_output.appendChild(velocity_title);
+        position_output.appendChild(column);
 
-        top_container.appendChild(velocity_ouput);
-    }
-
-    createRemoveButton(output_container, particle_id) {
-        let button = document.createElement("button");
-        button.style.width = "100px";
-        //   temporary
-        button.innerHTML = "Remove";
-        button.onclick = () => {
-            let particle = this.body_list[particle_id];
-            this.sim.deleteBody(particle);
-            this.view.deleteBody(particle);
-
-            this.body_list[particle_id] = null;
-
-            this.resetParticleChoice();
-            //   reset a particle drop down
-
-            output_container.remove();
-            button.remove();
-        }
-        
-        output_container.appendChild(button);
+        top_container.appendChild(position_output);
     }
 
     update() {
@@ -308,21 +352,51 @@ class ParticleProjectionIO extends IOHandler {
     updatePositionOutput(particle) {
         let x_value = document.getElementById("position_x_value" + particle.getId() + "_" + this.id);
         let y_value = document.getElementById("position_y_value" + particle.getId() + "_" + this.id);
+        //   retrieve html elements that represent output
 
         let position = particle.getPosition();
 
-        x_value.value = Math.trunc(position.x * 1000) / 1000;
-        y_value.value = Math.trunc(position.y * 1000) / 1000;
+        x_value.value = Math.round(position.getX() * 100) / 100;
+        y_value.value = Math.round(position.getY() * 100) / 100;
+        //   assign values rounded to 2 dp
     }
 
     updateVelocityOutput(particle) {
         let x_value = document.getElementById("velocity_x_value" + particle.getId() + "_" + this.id);
         let y_value = document.getElementById("velocity_y_value" + particle.getId() + "_" + this.id);
+        //   retrieve html elements that represent output
 
         let velocity = particle.getVelocity();
 
-        x_value.value = Math.trunc(velocity.x * 1000) / 1000;
-        y_value.value = Math.trunc(velocity.y * 1000) / 1000;
+        x_value.value = Math.round(velocity.x * 100) / 100;
+        y_value.value = Math.round(velocity.y * 100) / 100;
+        //   assign values rounded to 2 dp
+    }
+
+    createRemoveButton(output_container, particle_id) {
+        let button = document.createElement("button");
+        button.style.width = "100px";
+        //   fixed small width to avoid accidental clicks
+        button.innerHTML = "Remove";
+
+        button.onclick = () => {
+            let particle = this.body_list[particle_id];
+            this.sim.deleteBody(particle);
+            this.view.deleteBody(particle);
+
+            this.body_list[particle_id] = null;
+            //   remove particle from sim, view and io
+
+            this.resetParticleChoice();
+            //   reset a particle drop down
+
+            output_container.remove();
+            button.remove();
+            //   remove particle from HTML
+        }
+        
+        output_container.appendChild(button);
+        //   add button on the page
     }
 
     createEventArea() {
@@ -436,6 +510,7 @@ class ParticleProjectionIO extends IOHandler {
     }
 
     resetParticleChoice() {
+        return;
         let drop_down = document.getElementById("particle_choice" + this.id);
 
         drop_down.innerHTML = "";

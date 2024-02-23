@@ -137,9 +137,14 @@ class Controller {
 
         this.createSimHeader(sim, sim_area, index);
 
-        let view = new ViewSim(this.next_id);
+        let io_canvas_container = document.createElement("div");
+        io_canvas_container.style.display = "flex";
+        sim_area.appendChild(io_canvas_container);
+        //   container for an io area and canvas
+
+        let view = new ViewSim(this.next_id, io_canvas_container);
         this.view_list.push(view);
-        let io = eval("new " + class_group + "IO(this.next_id, sim, view)");
+        let io = eval("new " + class_group + "IO(this.next_id, sim, view, io_canvas_container)");
         this.io_list.push(io);
         //   creating ViewSim and IOHandler objects
 
@@ -153,8 +158,6 @@ class Controller {
         //   assigning an identifier to the new simulation area
         
         sim_area.classList.add("box");
-        sim_area.style.display = "flex";
-        sim_area.style.flexFlow = "row wrap";
         sim_area.style.marginTop = "10px";
         sim_area.style.marginBottom = "10px";
 

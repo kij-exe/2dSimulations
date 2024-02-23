@@ -87,19 +87,31 @@ canvas {
     /* space before io_area */
 }
 
+.error_message {
+    font-size: 10pt;
+    color: red;
+}
+
 mtd {
     padding: 2px;
 }
 
-label {
-    margin: 3px;
-    padding: 3px;
-    align-self: center;
+math, mrow, mi, mo, msup {
+    color: inherit;
+    font-weight: 600;
 }
 
 input {
-    font-size: 12pt;
-    width: 50px;
-    height: 20px;
+    font-size: 11pt;
+    width: 60px;
+    height: 16px;
     align-self: center;
+    color: #36395A;
+    background-color: aliceblue;
 }
+
+/* label {
+    margin: 3px;
+    padding: 3px;
+    align-self: center;
+} */

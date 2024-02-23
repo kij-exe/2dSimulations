@@ -2,7 +2,7 @@ import Vector from "../utility/Vector.js";
 
 
 class ViewSim {
-    constructor(id) {
+    constructor(id, io_canvas_container) {
         this.id = id;
         this.body_list = [];
         // initialising set of attributes to their initial values
@@ -15,11 +15,9 @@ class ViewSim {
         //   so the graphics is not stretched to fit the space
         this.canvas.style.alignSelf = "start";
         //   prevent the canvas from stretching
-        
-        let sim_area = document.getElementById("sim_area" + id);
 
-        //   line break before adding the simulation
-        sim_area.appendChild(this.canvas);
+        io_canvas_container.appendChild(this.canvas);
+        //   add canvas on the page
 
         this.ctx = this.canvas.getContext("2d");
         //   getting access to "context" of the canvas for drawing purposes
