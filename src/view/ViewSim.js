@@ -2,7 +2,7 @@ import Vector from "../utility/Vector.js";
 
 
 class ViewSim {
-    constructor(id, io_canvas_container) {
+    constructor(id, canvas_time_io_container) {
         this.id = id;
         this.body_list = [];
         // initialising set of attributes to their initial values
@@ -16,7 +16,7 @@ class ViewSim {
         this.canvas.style.alignSelf = "start";
         //   prevent the canvas from stretching
 
-        io_canvas_container.appendChild(this.canvas);
+        canvas_time_io_container.appendChild(this.canvas);
         //   add canvas on the page
 
         this.ctx = this.canvas.getContext("2d");
@@ -38,7 +38,6 @@ class ViewSim {
             //   redrawing each body separately, if bodies are stored by layers,
             //   then first bodies will be below later bodies
         }
-        this.test();
     }
 
     addBody(body) {
@@ -105,9 +104,9 @@ class ViewSim {
         this.drawCircle(center, unscaled_radius, color);
     }
     
-    test() {
-        
-    }    
+    // setScale(value) {
+
+    // }
 }
 
 

@@ -3,8 +3,8 @@ import Event from "./Event.js";
 
 
 class PositionEvent extends Event {
-    constructor(body, io_handler, event_id) {
-        super(body, io_handler, event_id);
+    constructor(body, io_handler, id) {
+        super(body, io_handler, id);
     }
 
     calculateTime(value, axis) {

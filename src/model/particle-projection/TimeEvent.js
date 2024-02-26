@@ -2,8 +2,8 @@ import Event from "./Event.js";
 
 
 class TimeEvent extends Event {
-    constructor(body, io_handler, event_id) {
-        super(body, io_handler, event_id);
+    constructor(body, io_handler, id) {
+        super(body, io_handler, id);
     }
 
     setTime(time, current_time) {

@@ -60,7 +60,7 @@ button:active {
   transform: translateY(2px);
 }
 
-p {
+p, label {
     margin: 3px;
     padding: 3px;
     align-self: center;
@@ -89,7 +89,7 @@ canvas {
 
 .error_message {
     font-size: 10pt;
-    color: red;
+    color: #ff7e7e;
 }
 
 mtd {
@@ -110,8 +110,18 @@ input {
     background-color: aliceblue;
 }
 
-/* label {
-    margin: 3px;
-    padding: 3px;
-    align-self: center;
-} */
+input[type="range"] {
+    -webkit-appearance: none;
+    height: 3px;
+    background-color: aliceblue;
+}
+
+input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    outline: 3px solid aliceblue;
+    background: #373d56;
+    cursor: pointer;
+}
