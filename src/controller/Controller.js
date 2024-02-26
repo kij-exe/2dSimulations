@@ -137,14 +137,21 @@ class Controller {
 
         this.createSimHeader(sim, sim_area, index);
 
-        let io_canvas_container = document.createElement("div");
-        io_canvas_container.style.display = "flex";
-        sim_area.appendChild(io_canvas_container);
-        //   container for an io area and canvas
+        let canvas_time_io_container = document.createElement("div");
+        canvas_time_io_container.style.display = "flex";
+        sim_area.appendChild(canvas_time_io_container);
+        //   container for io area, canvas and time control
 
-        let view = new ViewSim(this.next_id, io_canvas_container);
+        let canvas_time_container = document.createElement("div");
+        // canvas_time_container.style.display = "flex";
+        // canvas_time_container.style.flexDirection = "column";
+        canvas_time_container.id = "canvas_time_container" + this.next_id;
+        canvas_time_io_container.appendChild(canvas_time_container);
+        //   container for canvas and time control
+
+        let view = new ViewSim(this.next_id, canvas_time_container);
         this.view_list.push(view);
-        let io = eval("new " + class_group + "IO(this.next_id, sim, view, io_canvas_container)");
+        let io = eval("new " + class_group + "IO(this.next_id, sim, view, canvas_time_io_container)");
         this.io_list.push(io);
         //   creating ViewSim and IOHandler objects
 
@@ -190,15 +197,15 @@ class Controller {
 
     createSimButtons(sim, container) {
         let terminate_sim_button = document.createElement("button");
-        terminate_sim_button.innerHTML = "X";
+        terminate_sim_button.innerHTML = "&#10006;";
         terminate_sim_button.classList.add("sim_area_button");
 
         let pause_sim_button = document.createElement("button");
-        pause_sim_button.innerHTML = "||";
+        pause_sim_button.innerHTML = "&#10073;&#10073;";
         pause_sim_button.classList.add("sim_area_button");
 
         let continue_sim_button = document.createElement("button");
-        continue_sim_button.innerHTML = ">";
+        continue_sim_button.innerHTML = "&#9654;";
         continue_sim_button.classList.add("sim_area_button");
         //   instantiating buttons, labeling them and assigning
         //   a sim_area_button CSS class

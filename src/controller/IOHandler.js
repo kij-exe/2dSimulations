@@ -5,7 +5,6 @@ class IOHandler {
         this.id = id;
         this.sim = sim;
         this.view = view;
-        console.log(io_canvas_container);
 
         this.createIOarea(io_canvas_container);
     }

@@ -1,20 +1,24 @@
 
 
 class Event {
-    constructor(body, io_handler, event_id) {
+    constructor(body, io_handler, id) {
         this.body = body;
         //   assigning a body to the event
         this.occurs_at = -1;
         //   an attribute representing the time that event occurs at 
         this.io_handler = io_handler;
         //   reference to the input output handler of this simulation
-        this.event_id = event_id;
+        this.id = id;
         //   an id of this particular event (will be assigned by the
         //   IO Handler)
     }
 
     getTime() {
         return this.occurs_at;
+    }
+
+    getId() {
+        return this.id;
     }
 
     isValid() {
@@ -26,8 +30,7 @@ class Event {
     }
 
     execute() {
-        return;
-        this.io_handler.executeEvent(this.body, this.occurs_at, this.event_id);
+        this.io_handler.executeEvent(this);
         //   provides enough details for an io handler to produce 
         //   relevant output on the screen
     }

@@ -16,8 +16,6 @@ class ParticleProjectionIO extends IOHandler {
 
         this.body_list = [];
 
-        console.log("ParticleProjectionIO instantiated");
-
         this.initialize();
     }
 
@@ -41,10 +39,11 @@ class ParticleProjectionIO extends IOHandler {
         `;
         this.OUT_OF_RANGE_VALUES  = "Input values must be between -10000 and 10000";
         this.INVALID_EVENT_ERROR = "Such event will never occur";
+        this.PARTICLE_NOT_CHOSEN = "Choose the particle first";
         
         this.createParticleArea();
         this.createEventArea();
-        // this.createTimeSlider();
+        this.createTimeControl();
 
     }
 
@@ -284,6 +283,7 @@ class ParticleProjectionIO extends IOHandler {
 
         let top_container = document.createElement("div");
         top_container.style.display = "flex";
+        top_container.style.flexFlow = "wrap";
         //   container for a title and button
 
         let title = document.createElement("p");
@@ -423,7 +423,11 @@ class ParticleProjectionIO extends IOHandler {
         this.createEventInput(event_area);
 
         this.createEventMenuButton(container);
-    }
+
+        let event_queue = document.createElement("div");
+        event_queue.id = "event_queue" + this.id;
+        event_area.appendChild(event_queue);
+    } 
 
     createEventMenuButton(container) {
         let button = document.createElement("button");
@@ -431,7 +435,6 @@ class ParticleProjectionIO extends IOHandler {
 
         button.onclick = () => {
             let event_input = document.getElementById("event_input" + this.id);
-            let event_title = document.getElementById("event_title" + this.id);
 
             if (event_input.style.display == "none") {
                 event_input.style.display = "block";
@@ -478,6 +481,12 @@ class ParticleProjectionIO extends IOHandler {
         this.createPositionEventInput(event_input);
         this.createVelocityEventInput(event_input);
         this.createTimeEventInput(event_input);
+
+        let error_message = document.createElement("p");
+        error_message.id = "event_error_message" + this.id;
+        error_message.style.display = "none";
+        error_message.classList.add("error_message");
+        event_input.appendChild(error_message);
         
         this.createAddEventButton(event_input);
     }
@@ -490,8 +499,11 @@ class ParticleProjectionIO extends IOHandler {
         option.value = -1;
         option.innerHTML = "Event Type";
         drop_down.appendChild(option);
+        //   default option
 
         let event_types = ["Position Event", "Velocity Event", "Time Event"];
+        //   defines the order where
+        //   0 - Position; 1 - Velocity; 2 - Time;
 
         for (let i = 0; i < event_types.length; i++) {
             let option = document.createElement("option");
@@ -510,15 +522,15 @@ class ParticleProjectionIO extends IOHandler {
     }
 
     resetParticleChoice() {
-        return;
         let drop_down = document.getElementById("particle_choice" + this.id);
-
         drop_down.innerHTML = "";
+        //   empty previous contents
 
         let option = document.createElement("option");
         option.value = -1;
         option.innerHTML = "Particle";
         drop_down.appendChild(option);
+        //   default option
 
         for (let i = 0; i < this.body_list.length; i++) {
             if (this.body_list[i] == null)
@@ -550,21 +562,21 @@ class ParticleProjectionIO extends IOHandler {
                 break;
             case "0":
                 //   Position Event
-                position_condition.style.display = "flex";
+                position_condition.style.display = "block";
                 add_button.onclick = () => {
                     this.addPositionEvent();
                 }
                 break;
             case "1":
                 //   Velocity Event
-                velocity_condition.style.display = "flex";
+                velocity_condition.style.display = "block";
                 add_button.onclick = () => {
                     this.addVelocityEvent();
                 }
                 break;
             case "2":
                 //   Time Event
-                time_condition.style.display = "flex";
+                time_condition.style.display = "block";
                 add_button.onclick = () => {
                     this.addTimeEvent();
                 }
@@ -674,28 +686,44 @@ class ParticleProjectionIO extends IOHandler {
     addPositionEvent() {
         let x_value = document.getElementById("x_event_condition" + this.id).value;
         let y_value = document.getElementById("y_event_condition" + this.id).value;
+        //   retrieving user input for conditions 
+
+        let error_message = document.getElementById("event_error_message" + this.id);
+        error_message.style.display = "none";
 
         let particle_id = parseInt(document.getElementById("particle_choice" + this.id).value);
-        //   add validations
+        if (particle_id == -1) {
+            error_message.innerHTML = this.PARTICLE_NOT_CHOSEN;
+            error_message.style.display = "block";
+            return;
+        }
+        //   validating particle choice
         let particle = this.body_list[particle_id];
+        //   retrieving the required particle
 
         let event = new PositionEvent(particle, this, this.next_event_id);
 
         if (!isNaN(x_value) && !(x_value === ""))
-            event.setXtime(parseInt(x_value));
+            event.setXtime(parseFloat(x_value));
+            //   validating x_value
         else if (!isNaN(y_value) && !(y_value === ""))
-            event.setYtime(parseInt(y_value));
+            event.setYtime(parseFloat(y_value));
+            //   validating y_value
         else {
-            console.log("invalid 0");
+            error_message.innerHTML = this.INCORRECT_TYPE_ERROR;
+            error_message.style.display = "block";
             return;
         }
 
         if (!event.isValid()) {
-            console.log("invalid");
+            error_message.innerHTML = this.INVALID_EVENT_ERROR;
+            error_message.style.display = "block";
             return;
         }
 
         this.sim.addEvent(event);
+
+        this.enqueueEvent(event, this.sim);
 
         this.next_event_id++;
         this.resetNextEventTitle();
@@ -704,31 +732,44 @@ class ParticleProjectionIO extends IOHandler {
     addVelocityEvent() {
         let x_value = document.getElementById("vx_event_condition" + this.id).value;
         let y_value = document.getElementById("vy_event_condition" + this.id).value;
+        //   retrieving user input for conditions 
+        
+        let error_message = document.getElementById("event_error_message" + this.id);
+        error_message.style.display = "none";
 
         let particle_id = parseInt(document.getElementById("particle_choice" + this.id).value);
-        //   add validations
+        if (particle_id == -1) {
+            error_message.innerHTML = this.PARTICLE_NOT_CHOSEN;
+            error_message.style.display = "block";
+            return;
+        }
+        //   validating particle choice
         let particle = this.body_list[particle_id];
+        //   retrieving the required particle
 
         let event = new VelocityEvent(particle, this, this.next_event_id);
 
         if (!isNaN(x_value) && !(x_value === ""))
-            event.setXtime(parseInt(x_value));
+            event.setXtime(parseFloat(x_value));
+            //   validating x_value
         else if (!isNaN(y_value) && !(y_value === ""))
-            event.setYtime(parseInt(y_value));
+            event.setYtime(parseFloat(y_value));
+            //   validating y_value
         else {
-            console.log("invalid 0");
+            error_message.innerHTML = this.INCORRECT_TYPE_ERROR;
+            error_message.style.display = "block";
             return;
         }
 
         if (!event.isValid()) {
-            console.log("invalid");
+            error_message.innerHTML = this.INVALID_EVENT_ERROR;
+            error_message.style.display = "block";
             return;
         }
 
         this.sim.addEvent(event);
 
-        this.next_event_id++;
-        this.resetNextEventTitle();
+        this.enqueueEvent(event, this.sim);
 
         this.next_event_id++;
         this.resetNextEventTitle();
@@ -736,47 +777,140 @@ class ParticleProjectionIO extends IOHandler {
 
     addTimeEvent() {
         let time = document.getElementById("time_event_condition" + this.id).value;
+        
+        let error_message = document.getElementById("event_error_message" + this.id);
+        error_message.style.display = "none";
 
         let particle_id = parseInt(document.getElementById("particle_choice" + this.id).value);
-        //   add validations
+        if (particle_id == -1) {
+            error_message.innerHTML = this.PARTICLE_NOT_CHOSEN;
+            error_message.style.display = "block";
+            return;
+        }
+        //   validating particle choice
         let particle = this.body_list[particle_id];
 
         let event = new TimeEvent(particle, this, this.next_event_id);
 
-        if (isNaN(time) || (time === ""))
+        if (isNaN(time) || (time === "")) {
+            error_message.innerHTML = this.INCORRECT_TYPE_ERROR;
+            error_message.style.display = "block";
             return;
+        }
         
-        event.setTime(time);
+        event.setTime(parseFloat(time));
 
         if (!event.isValid()) {
-            console.log("invalid");
+            error_message.innerHTML = this.INVALID_EVENT_ERROR;
+            error_message.style.display = "block";
             return;
         }
 
         this.sim.addEvent(event);
 
+        this.enqueueEvent(event, this.sim);
+
         this.next_event_id++;
         this.resetNextEventTitle();
     }
 
-    // createEventArea() {
-        // create dedicated section on the I/O area
-        // put the drop-down list on the section
-        // //   options of the list are PositionEvent/VelocityEvent/TimeEvent
-        // //   it defines the type of event to be added
-        // create occurred events section on the event area
-        // //   initially empty 
-        // create the “add_event_button”
-        // “add_event_button” listen for the click
-        //     invoke this.addEvent() function on click
-        // //   this function starts the process of adding a new event
-    
-    // }
+    enqueueEvent(event, sim) {
+        let event_queue = document.getElementById("event_queue" + this.id);
 
-    // createTimeSlider() {
+        let enqueued_event = document.createElement("div");
+        enqueued_event.id = "enqueued_event" + event.getId() + "_" + this.id;
+        enqueued_event.classList.add("box");
+        enqueued_event.style.display = "flex";
+        enqueued_event.style.flexFlow = "wrap";
 
-    // }
+        let title = document.createElement("p");
+        title.innerHTML = "Event " + event.getId();
+        title.style.marginRight = "auto";
+        enqueued_event.appendChild(title);
+
+        let occurs_in_label = document.createElement("label");
+        occurs_in_label.innerHTML = "Occurs in";
+        
+        let occurs_in_value = document.createElement("input");
+        let time = (event.getTime() - sim.getTime()) / 1000;
+        //   calculating the time before event occurs and converting it to seconds
+        occurs_in_value.value = Math.round(time * 1000) / 1000;
+
+        enqueued_event.appendChild(occurs_in_label);
+        enqueued_event.appendChild(occurs_in_value);
+
+        event_queue.appendChild(enqueued_event);
+    }
+
+    executeEvent(event) {
+        let enqueued_event = document.getElementById("enqueued_event" + event.getId() + "_" + this.id);
+        enqueued_event.remove();
+    }
+
+    createTimeControl() {
+        let canvas_time_container = document.getElementById("canvas_time_container" + this.id);
+
+        let time_control_container = document.createElement("div");
+        time_control_container.style.display = "flex";
+
+        this.createSetToZeroButton(time_control_container);
+        this.createTimeSlider(time_control_container);
+        this.createTimeInput(time_control_container);
+
+        canvas_time_container.appendChild(time_control_container);
+    }
+
+    createSetToZeroButton(time_control_container) {
+        let button = document.createElement("button");
+        button.innerHTML = '<i class="material-icons" style="background-color: rgba(0, 0, 0, 0); color: #39498C">&#xe042;</i>';
+
+        button.onclick = () => {
+            console.log("set to 0");
+            this.sim.time = 0;
+        }
+
+        time_control_container.appendChild(button);
+    }
+
+    createTimeSlider(time_control_container) {
+        let slider = document.createElement("input");
+        slider.type = "range";
+        slider.style.flexGrow = 1;
+        
+        slider.min = -5;
+        slider.max = 70;
+        slider.value = 0;
+
+        // let datalist = document.createElement("datalist");
+        // da
+
+        slider.onchange = () => {
+            console.log(slider.value);
+            this.sim.pause();
+            this.sim.time = parseFloat(slider.value) * 1000;
+            this.sim.update(0);
+        }
+
+        time_control_container.appendChild(slider);
+    }
+
+    createTimeInput(time_control_container) {
+        let input = document.createElement("input");
+        input.type = "text";
+        input.style.marginRight = "4px"; 
+        input.style.marginLeft = "4px"; 
+
+        input.onchange = () => {
+            let value = input.value;
+            if (!isNaN(value)) {
+                this.sim.pause();
+                this.sim.time = parseFloat(value) * 1000;
+                this.sim.update(0);
+            }
+        }
+
+        time_control_container.appendChild(input);
+    }
 }
-//   update event drop-down every time a particle gets deleted or created!!!!!!!!
 
 export {ParticleProjectionIO as default}
