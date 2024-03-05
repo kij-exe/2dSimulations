@@ -25,6 +25,18 @@ class PointMass extends Body {
         return this.created_at;
     }
 
+    //   time in seconds
+    calculatePositionAt(time) {
+        let ds = this.initial_velocity.multiplied(time);
+        //   initialising ds variable that represents change in position
+        //   and calculating the first part of the equation
+
+        ds.add(this.acceleration.multiplied(time * time / 2));
+        //   adding the change caused by acceleration
+
+        return this.initial_position.added(ds); 
+    }
+
     update(time) {
         let t = (time - this.created_at) / 1000;
         //   calculate time from the creation of the object

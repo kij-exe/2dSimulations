@@ -98,6 +98,7 @@ class Vector {
     }
 
     rotatedBy(angle, axis = new Vector()) {
+        //   defined as anticlockwise rotation by angle
         let rotated_vector = this.subtracted(axis);
         //   first tranlate the axis to the origin
 
