@@ -2,7 +2,7 @@ import ViewBody from "./ViewBody.js";
 
 
 class ViewPointMass extends ViewBody {
-    constructor(body, color) {
+    constructor(body, color="black") {
         super(body, color);
         //   body is an instance of PointMass in this case
     }

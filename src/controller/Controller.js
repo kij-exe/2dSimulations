@@ -11,6 +11,7 @@ import ViewPointMass from "../view/ViewPointMass.js";
 import TimeEvent from "../model/particle-projection/TimeEvent.js";
 import PositionEvent from "../model/particle-projection/PositionEvent.js";
 import VelocityEvent from "../model/particle-projection/VelocityEvent.js";
+import Util from "../utility/Util.js";
 
 
 class Controller {
@@ -37,7 +38,7 @@ class Controller {
 
         this.startUpdateLoop();
 
-        // this.test();
+        this.test();
     }
 
     createSimulationsDropDown() {
@@ -138,6 +139,7 @@ class Controller {
         this.createSimHeader(sim, sim_area, index);
 
         let canvas_time_io_container = document.createElement("div");
+        canvas_time_io_container.id = "canvas_time_io_container" + this.next_id;
         canvas_time_io_container.style.display = "flex";
         sim_area.appendChild(canvas_time_io_container);
         //   container for io area, canvas and time control
@@ -251,15 +253,6 @@ class Controller {
     }
 
     test() {
-        let body = document.getElementsByTagName("body")[0];
-
-        let testTag = document.createElement("p");
-        testTag.style.padding = "5px";
-        testTag.style.outline = "2px solid rgb(56 61 109)";
-        testTag.style.marginTop = "30px";
-        testTag.innerHTML = "Text with this colour scheme";
-        
-        body.appendChild(testTag);
     }
 }
 

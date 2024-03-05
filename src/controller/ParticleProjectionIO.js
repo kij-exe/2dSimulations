@@ -5,6 +5,7 @@ import ViewPointMass from "../view/ViewPointMass.js";
 import PositionEvent from "../model/particle-projection/PositionEvent.js"
 import VelocityEvent from "../model/particle-projection/VelocityEvent.js"
 import TimeEvent from "../model/particle-projection/TimeEvent.js"
+import Trajectory from "../view/Trajectory.js";
 
 
 class ParticleProjectionIO extends IOHandler {
@@ -44,7 +45,7 @@ class ParticleProjectionIO extends IOHandler {
         this.createParticleArea();
         this.createEventArea();
         this.createTimeControl();
-
+        this.createKeyboardInput();
     }
 
     createParticleArea() {
@@ -187,10 +188,10 @@ class ParticleProjectionIO extends IOHandler {
                 <mo>(</mo>
                 <mtable>
                     <mtr>
-                        <mtd><mi><input id="${top_id}"/></mi></mtd>
+                        <mtd><mi><input id="${top_id}" type="text"/></mi></mtd>
                     </mtr>
                     <mtr>
-                        <mtd><mi><input id="${bottom_id}"/></mi></mtd>
+                        <mtd><mi><input id="${bottom_id}" type="text"/></mi></mtd>
                     </mtr>
                 </mtable>
                 <mo>)</mo>
@@ -255,6 +256,11 @@ class ParticleProjectionIO extends IOHandler {
 
         let view_particle = new ViewPointMass(particle, "black");
         this.view.addBody(view_particle);
+
+        this.view.adjustMapping(particle);
+
+        let trajectory = new Trajectory(particle);
+        this.view.addBody(trajectory);
 
         this.body_list.push(particle);
         //   add the particle to io_list's own body_list
@@ -347,6 +353,8 @@ class ParticleProjectionIO extends IOHandler {
             this.updatePositionOutput(particle);
             this.updateVelocityOutput(particle);
         }
+        if (this.sim.isActive())
+            this.updateThumb();
     }
 
     updatePositionOutput(particle) {
@@ -853,11 +861,11 @@ class ParticleProjectionIO extends IOHandler {
         let time_control_container = document.createElement("div");
         time_control_container.style.display = "flex";
 
+        canvas_time_container.appendChild(time_control_container);
+
         this.createSetToZeroButton(time_control_container);
         this.createTimeSlider(time_control_container);
         this.createTimeInput(time_control_container);
-
-        canvas_time_container.appendChild(time_control_container);
     }
 
     createSetToZeroButton(time_control_container) {
@@ -865,33 +873,98 @@ class ParticleProjectionIO extends IOHandler {
         button.innerHTML = '<i class="material-icons" style="background-color: rgba(0, 0, 0, 0); color: #39498C">&#xe042;</i>';
 
         button.onclick = () => {
-            console.log("set to 0");
-            this.sim.time = 0;
+            this.sim.resetTime();
+            this.update();
+            //   update positions
         }
 
         time_control_container.appendChild(button);
     }
 
     createTimeSlider(time_control_container) {
+        let slider_container = document.createElement("div");
+        slider_container.style.display = "flex";
+        slider_container.style.flexGrow = 1;
+        slider_container.style.position = "relative";
+        slider_container.style.marginLeft = "10px"; 
+        slider_container.style.marginRight = "10px";
+        
         let slider = document.createElement("input");
+        slider.id = "time_slider" + this.id;
         slider.type = "range";
         slider.style.flexGrow = 1;
         
         slider.min = -5;
         slider.max = 70;
         slider.value = 0;
+        slider.step = "any";
 
-        // let datalist = document.createElement("datalist");
-        // da
+        let datalist = document.createElement("datalist");
+        for (let i of [0, 60]) {
+            let option = document.createElement("option");
+            option.innerHTML = i;
+            datalist.appendChild(option);
+        }
+        slider_container.appendChild(datalist);
+        slider.setAttribute("list", "marks");
 
-        slider.onchange = () => {
-            console.log(slider.value);
+        slider.oninput = () => {
             this.sim.pause();
-            this.sim.time = parseFloat(slider.value) * 1000;
-            this.sim.update(0);
+            this.sim.resetTime(parseFloat(slider.value) * 1000);
+
+            this.updateThumb();
         }
 
-        time_control_container.appendChild(slider);
+        time_control_container.appendChild(slider_container);
+        slider_container.appendChild(slider);
+
+        this.createTickMarks(slider_container);
+
+        let thumb_text = document.createElement("span");
+        thumb_text.id = "thumb_text" + this.id;
+        thumb_text.classList.add("ticktext");
+        thumb_text.style.top = "22px";
+        slider_container.appendChild(thumb_text);
+        this.updateThumb();
+    }
+
+    createTickMarks(slider_container) {
+        let tick0 = document.createElement("div");
+        tick0.classList.add("tickmark");
+        tick0.style.left = `calc(6px + 5 * (100% - 12px) / 75 - 1px)`;
+        slider_container.appendChild(tick0);
+
+        let ticktext0 = document.createElement("span");
+        ticktext0.innerHTML = 0;
+        ticktext0.classList.add("ticktext");
+        ticktext0.style.top = "22px";
+        ticktext0.style.right = `calc(6px + 70 * (100% - 12px) / 75 + 8px)`;
+        slider_container.appendChild(ticktext0);
+
+        let tick60 = document.createElement("div");
+        tick60.classList.add("tickmark");
+        tick60.style.left = `calc(6px + 65 * (100% - 12px) / 75 - 1px)`;
+        slider_container.appendChild(tick60);
+        
+        let ticktext60 = document.createElement("span");
+        ticktext60.innerHTML = 60;
+        ticktext60.classList.add("ticktext");
+        ticktext60.style.top = "22px";
+        ticktext60.style.right = `calc(6px + 10 * (100% - 12px) / 75 + 8px)`;
+        slider_container.appendChild(ticktext60);
+    }
+    
+    updateThumb() {
+        let slider = document.getElementById("time_slider" + this.id);
+        let thumb_text = document.getElementById("thumb_text" + this.id);
+
+        let value = this.sim.getTime() / 1000;
+        let clamped_value = Math.max(-5, Math.min(value, 70));
+        slider.value = clamped_value;
+
+        thumb_text.innerHTML = Math.round(value);
+        thumb_text.style.right = `calc(6px + ${70 - clamped_value} * (100% - 12px) / 75 + 8px)`
+
     }
 
     createTimeInput(time_control_container) {
@@ -904,12 +977,44 @@ class ParticleProjectionIO extends IOHandler {
             let value = input.value;
             if (!isNaN(value)) {
                 this.sim.pause();
-                this.sim.time = parseFloat(value) * 1000;
-                this.sim.update(0);
+                this.sim.time.resetTime(parseFloat(value) * 1000);
             }
         }
 
         time_control_container.appendChild(input);
+    }
+
+    createKeyboardInput() {
+        let canvas = this.view.getCanvas();
+        canvas.onkeydown = (event) => {
+            if (event.code == "KeyW") {
+                this.view.increaseTranslationBy(new Vector(0, 2 + event.shiftKey*10));
+            }
+            else if (event.code == "KeyA") {
+                this.view.increaseTranslationBy(new Vector(2 + event.shiftKey*10, 0));
+            }
+            else if (event.code == "KeyS") {
+                this.view.increaseTranslationBy(new Vector(0, -2 - event.shiftKey*10));
+            }
+            else if (event.code == "KeyD") {
+                this.view.increaseTranslationBy(new Vector(-2 - event.shiftKey*10, 0));
+            }
+            else if (event.code == "KeyI") {
+                this.view.increaseScaleBy(1/1.2);
+            }
+            else if (event.code == "KeyO") {
+                this.view.increaseScaleBy(1.2);
+            }
+            else if (event.code == "Space") {
+                this.sim.toggle();
+            }
+            else if (event.code == "Backspace") {
+                this.sim.resetTime();
+                console.log()
+                this.updateThumb();
+                //   update positions
+            }
+        }
     }
 }
 

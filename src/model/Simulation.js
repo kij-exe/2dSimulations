@@ -15,6 +15,15 @@ class Simulation {
         this.is_active = false;
     }
 
+    toggle() {
+        this.is_active = !this.is_active;
+    }
+
+    resetTime(value=0) {
+        this.time = value;
+        this.update(0);
+    }
+
     continue() {
         // console.log("Time start: " + new Date().getTime());
         this.is_active = true;

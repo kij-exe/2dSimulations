@@ -19,6 +19,10 @@ class IOHandler {
         io_canvas_container.appendChild(this.io_area);
         //   put io_area on the page
     }
+
+    initialize() {
+        
+    }
 }
 
 export {IOHandler as default};

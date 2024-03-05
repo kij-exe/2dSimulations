@@ -101,7 +101,7 @@ math, mrow, mi, mo, msup {
     font-weight: 600;
 }
 
-input {
+input[type="text"] {
     font-size: 11pt;
     width: 60px;
     height: 16px;
@@ -111,17 +111,47 @@ input {
 }
 
 input[type="range"] {
-    -webkit-appearance: none;
+    -webkit-appearance: none;    
+    appearance: none;
+    align-self: center;
     height: 3px;
     background-color: aliceblue;
+    border-radius: 3px;
+
+    align-self: center;
+    margin: 0;
+    z-index: 1;
 }
 
-input::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    height: 14px;
-    width: 14px;
+    appearance: none;
+    height: 12px;
+    width: 12px;
     border-radius: 50%;
     outline: 3px solid aliceblue;
     background: #373d56;
     cursor: pointer;
+    margin-top: -16px;
+
+    transition: all .2s ease-in-out;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.tickmark {
+    height: 28px;
+    width: 2px;
+    background-color: aliceblue;
+    position: absolute;
+
+    align-self: center;
+    border-radius: 3px;
+}
+
+.ticktext {
+    position: absolute;
+    background-color: rgb(0, 0, 0, 0);
 }
