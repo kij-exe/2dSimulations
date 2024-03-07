@@ -1,10 +1,8 @@
 import Vector from "../utility/Vector.js";
-import ViewBody from "./ViewBody.js";
 
 
-class CoordinateAxis extends ViewBody {
+class CoordinateAxis {
     constructor() {
-        super();
     }
 
     redraw(view) {

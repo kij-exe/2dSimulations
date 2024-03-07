@@ -1,5 +1,10 @@
+import Body from "../Body.js";
 
 
-class RigidBody {
-    
+class RigidBody extends Body {
+    constructor(id) {
+        super(id);
+    }
 }
+
+export {RigidBody as default};
