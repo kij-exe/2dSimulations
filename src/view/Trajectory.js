@@ -14,16 +14,16 @@ class Trajectory extends ViewBody {
         let a = -9.8;
 
         let f = (x) => {
-            return vy*x/vx + a*x*x/(2*vx*vx);
+            return vy*(x - x0)/vx + a*(x - x0)*(x - x0)/(2*vx*vx);
         }
-        //   not accounting for initial position yet
 
         let df = (x) => {
-            return vy/vx + a*x/(vx*vx);
+            return vy/vx + a*(x - x0)/(vx*vx);
         }
 
-        let x1 = x0 + vx*10;
-        let y1 = f(x1);
+        let x1 = x0 + vx*60;
+        //   the value in (vx * value) must be adjusted to the scale
+        let y1 = f(x1) + y0;
         this.end_point = new Vector(x1, y1);
 
         let m0 = df(x0);
@@ -35,11 +35,12 @@ class Trajectory extends ViewBody {
     }
 
     redraw(view) {
-        view.drawPoint(this.starting_point, "red", 7);
-        view.drawPoint(this.control_point, "red", 7);
-        view.drawPoint(this.end_point, "red", 7);
+        // view.drawPoint(this.starting_point, "red", 7);
+        // view.drawPoint(this.control_point, "red", 7);
+        // view.drawPoint(this.end_point, "red", 7);
         view.drawParabolaBy(this.starting_point, this.control_point, this.end_point, this.color);
     }
+    // address the problem of sharp corners
 }
 
 export {Trajectory as default};

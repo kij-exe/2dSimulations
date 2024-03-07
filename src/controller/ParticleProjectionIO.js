@@ -22,8 +22,7 @@ class ParticleProjectionIO extends IOHandler {
 
     initialize() {
         this.INCORRECT_TYPE_ERROR = `
-        Input values must be real numbers with a decimal part separated 
-        by the dot (not comma) or in the format Xe+/-Y for 
+        Input values must be numbers with a decimal point or in the format Xe+/-Y for 
         <math xmlns="http://www.w3.org/1998/Math/MathML">
             <mrow>
                 <mi>X</mi>
@@ -86,18 +85,68 @@ class ParticleProjectionIO extends IOHandler {
             let particle_input = document.getElementById("particle_input" + this.id);
 
             if (particle_input.style.display == "none") {
+                //   change button state to show that the menu is opened
                 button.innerHTML = "v";
+                //   reveal the menu
                 particle_input.style.display = "block";
+
+                //   start canvas input chain
+                this.view.getCanvas().onclick = (event) => {
+                    this.canvasPositionInput(event);
+                }
             }
             else {
+                //   change button state to show that the menu is closed
                 button.innerHTML = "<";
+                //   hide the menu
                 particle_input.style.display = "none";
+
+                //   remove canvas input
+                this.view.getCanvas().onclick = null;
+
             }
             //   toggles particle_input display
             //   between none and block
         }
 
         header_container.appendChild(button);
+    }
+
+    getPositionFromClickEvent(event) {
+        //   Get the target (canvas element itself)
+        const target = event.target;
+        //   Get the bounding rectangle of target
+        const rect = target.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        //   x and y relative to the top left corner 
+        //   with y axis pointing downwards
+        return this.view.toSimSpace(new Vector(x, y));
+    }
+
+    //   input from the canvas
+    canvasPositionInput(event) {
+        let position = this.getPositionFromClickEvent(event);
+
+        document.getElementById("position_x_input" + this.id).value = position.getX();
+        document.getElementById("position_y_input" + this.id).value = position.getY();
+
+        this.view.getCanvas().onclick = (event) => {
+            this.canvasVelocityInput(event, position);
+        }
+    }
+
+    canvasVelocityInput(event, position) {
+        let nextClick = this.getPositionFromClickEvent(event);
+        let velocity = nextClick.subtracted(position);
+        velocity.multiply(Math.sqrt(this.view.getScale()) / 4);
+
+        document.getElementById("velocity_x_input" + this.id).value = velocity.getX();
+        document.getElementById("velocity_y_input" + this.id).value = velocity.getY();
+
+        this.view.getCanvas().onclick = (event) => {
+            this.canvasPositionInput(event);
+        }
     }
 
     createParticleInput(particle_area) {
@@ -188,10 +237,10 @@ class ParticleProjectionIO extends IOHandler {
                 <mo>(</mo>
                 <mtable>
                     <mtr>
-                        <mtd><mi><input id="${top_id}" type="text"/></mi></mtd>
+                        <mtd><mi><input id="${top_id}" type="text" autocomplete="off"/></mi></mtd>
                     </mtr>
                     <mtr>
-                        <mtd><mi><input id="${bottom_id}" type="text"/></mi></mtd>
+                        <mtd><mi><input id="${bottom_id}" type="text" autocomplete="off"/></mi></mtd>
                     </mtr>
                 </mtable>
                 <mo>)</mo>
@@ -390,7 +439,7 @@ class ParticleProjectionIO extends IOHandler {
         button.onclick = () => {
             let particle = this.body_list[particle_id];
             this.sim.deleteBody(particle);
-            this.view.deleteBody(particle);
+            this.view.deleteById(particle.getId());
 
             this.body_list[particle_id] = null;
             //   remove particle from sim, view and io
@@ -874,7 +923,7 @@ class ParticleProjectionIO extends IOHandler {
 
         button.onclick = () => {
             this.sim.resetTime();
-            this.update();
+            this.updateThumb();
             //   update positions
         }
 
@@ -977,7 +1026,8 @@ class ParticleProjectionIO extends IOHandler {
             let value = input.value;
             if (!isNaN(value)) {
                 this.sim.pause();
-                this.sim.time.resetTime(parseFloat(value) * 1000);
+                this.sim.resetTime(parseFloat(value) * 1000);
+                this.updateThumb();
             }
         }
 
@@ -1006,13 +1056,20 @@ class ParticleProjectionIO extends IOHandler {
                 this.view.increaseScaleBy(1.2);
             }
             else if (event.code == "Space") {
+                event.preventDefault();
                 this.sim.toggle();
             }
             else if (event.code == "Backspace") {
                 this.sim.resetTime();
-                console.log()
                 this.updateThumb();
                 //   update positions
+            }
+            else if (event.code == "KeyB" && event.shiftKey) {
+                this.addParticle();
+            }
+            else if (event.code == "KeyK") {
+                this.view.getCanvas().dispatchEvent(new MouseEvent("click", {clientX: 70, clientY: 500, target: this.view.getCanvas()}));
+                this.view.getCanvas().dispatchEvent(new MouseEvent("click", {clientX: 170, clientY: 350, target: this.view.getCanvas()}));
             }
         }
     }
