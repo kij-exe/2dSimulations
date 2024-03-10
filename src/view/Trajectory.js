@@ -3,8 +3,8 @@ import ViewBody from "./ViewBody.js";
 
 
 class Trajectory extends ViewBody {
-    constructor(body, color="black") {
-        super(body, color);
+    constructor(body, scale, color="grey", layer=0) {
+        super(body, color, layer);
         this.starting_point = body.getInitialPosition();
 
         let x0 = this.starting_point.getX();
@@ -12,35 +12,38 @@ class Trajectory extends ViewBody {
         let vx = body.getInitialVelocity().getX();
         let vy = body.getInitialVelocity().getY();
         let a = -9.8;
+        // set of constant parameters
 
         let f = (x) => {
-            return vy*(x - x0)/vx + a*(x - x0)*(x - x0)/(2*vx*vx);
+            return y0 + vy*(x - x0)/vx + a*(x - x0)*(x - x0)/(2*vx*vx);
         }
+        // y = f(x)
 
         let df = (x) => {
             return vy/vx + a*(x - x0)/(vx*vx);
         }
+        // derivative of f(x)
 
-        let x1 = x0 + vx*60;
-        //   the value in (vx * value) must be adjusted to the scale
-        let y1 = f(x1) + y0;
-        this.end_point = new Vector(x1, y1);
+        let x2 = x0 + vx * (60/Math.sqrt(scale));
+        let y2 = f(x2);
+        this.end_point = new Vector(x2, y2);
 
         let m0 = df(x0);
-        let m1 = df(x1);
+        let m2 = df(x2);
+        //   derivatives of two tangents
 
-        let x_control = (y1 - y0 + m0*x0 - m1*x1) / (m0 - m1);
-
-        this.control_point = new Vector(x_control, y0 + m0 * (x_control - x0));
+        let x1 = (y2 - y0 + m0*x0 - m2*x2) / (m0 - m2);
+        //   x coordinate of the intersection of two tangents 
+        this.control_point = new Vector(x1, y0 + m0 * (x1 - x0));
     }
 
     redraw(view) {
         // view.drawPoint(this.starting_point, "red", 7);
         // view.drawPoint(this.control_point, "red", 7);
         // view.drawPoint(this.end_point, "red", 7);
+        
         view.drawParabolaBy(this.starting_point, this.control_point, this.end_point, this.color);
     }
-    // address the problem of sharp corners
 }
 
 export {Trajectory as default};
