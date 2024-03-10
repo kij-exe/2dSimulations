@@ -78,15 +78,15 @@ class ViewSim {
             //   then first bodies will be below later bodies
         }
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(50, 50);
-        this.ctx.lineTo(750, 50);
-        this.ctx.lineTo(750, 400);
-        this.ctx.lineTo(50, 400);
-        this.ctx.lineTo(50, 50);
+        // this.ctx.beginPath();
+        // this.ctx.moveTo(50, 50);
+        // this.ctx.lineTo(750, 50);
+        // this.ctx.lineTo(750, 400);
+        // this.ctx.lineTo(50, 400);
+        // this.ctx.lineTo(50, 50);
 
-        this.ctx.strokeStyle = "blue";
-        this.ctx.stroke();
+        // this.ctx.strokeStyle = "blue";
+        // this.ctx.stroke();
     }
 
     addBody(body) {
