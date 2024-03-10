@@ -32,12 +32,15 @@ class ViewSim {
         //   getting access to "context" of the canvas for drawing purposes
         this.ctx.lineWidth = 2;
 
+        this.target_scale = 40;
+        this.INITIAL_SCALE = 40;
         this.scale = 40;
+
+        this.target_translation = new Vector(0 + 50, this.canvas.height - 50);
+        this.INITIAL_TRANSLATION = new Vector(0 + 50, this.canvas.height - 50);
         this.translation = new Vector(0 + 50, this.canvas.height - 50);
 
         this.coordinate_axis = new CoordinateAxis();
-
-        this.test();
     }
 
     getId() {
@@ -52,21 +55,52 @@ class ViewSim {
         return this.scale;
     }
 
+    resetScale() {
+        this.target_scale = this.INITIAL_SCALE;
+    }
+
+    resetTranslation() {
+        this.target_translation = this.INITIAL_TRANSLATION;
+    }
+
     redraw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         //   clearing canvas area from the previous frame
 
+        this.scale += (this.target_scale - this.scale) / 15;
+        this.translation.add(this.target_translation.subtracted(this.translation).divided(15));
+
+        this.coordinate_axis.redraw(this);
+        
         for (let i = 0; i < this.body_list.length; i++) {
             this.body_list[i].redraw(this);
             //   redrawing each body separately, if bodies are stored by layers,
             //   then first bodies will be below later bodies
         }
 
-        this.coordinate_axis.redraw(this);
+        this.ctx.beginPath();
+        this.ctx.moveTo(50, 50);
+        this.ctx.lineTo(750, 50);
+        this.ctx.lineTo(750, 400);
+        this.ctx.lineTo(50, 400);
+        this.ctx.lineTo(50, 50);
+
+        this.ctx.strokeStyle = "blue";
+        this.ctx.stroke();
     }
 
     addBody(body) {
         this.body_list.push(body);
+        let i = this.body_list.length - 1;
+        while (i > 0 && this.body_list[i - 1].getLayer() > this.body_list[i].getLayer()) {
+            //   while the end of the list has not been reached
+            //   and the body at (i) is on lower layers than body (i+1) 
+            let temp = this.body_list[i - 1];
+            this.body_list[i - 1] = this.body_list[i]
+            this.body_list[i] = temp;
+            //   swap them
+            i--;
+        }
     }
 
     deleteBody(body) {
@@ -81,7 +115,7 @@ class ViewSim {
 
     deleteById(id) {
         for (let i = 0; i < this.body_list.length; i++) {
-            if (this.body_list[i].getBody().getId() == id) {
+            if (this.body_list[i].getId() == id) {
                 this.body_list.splice(i, 1);
                 i--;
             }
@@ -163,7 +197,7 @@ class ViewSim {
     }
     
     setScale(scale) {
-        this.scale = scale;
+        this.target_scale = scale;
     }
 
     drawLine(start, finish, color="black") {
@@ -214,24 +248,26 @@ class ViewSim {
     }
 
     increaseTranslationBy(vector) {
-        this.translation.add(vector);
+        this.target_translation = this.target_translation.added(vector);
     }
 
     increaseScaleBy(value) {
-        this.scale *= value;
+        this.target_scale *= value;
     }
 
     drawParabolaBy(starting_point, control_point, end_point, color="black") {
         this.ctx.beginPath();
         this.ctx.moveTo(...this.toCanvas(starting_point));
-        this.ctx.quadraticCurveTo(...this.toCanvas(control_point), ...this.toCanvas(end_point));
+        this.ctx.quadraticCurveTo(
+            ...this.toCanvas(control_point),
+            ...this.toCanvas(end_point)
+        );
 
         this.ctx.strokeStyle = color;
         this.ctx.stroke();
     }
 
     adjustMapping(particle) {
-        return;
         let initial_position = particle.getInitialPosition();
         let list_of_points = [initial_position];
 
@@ -252,35 +288,51 @@ class ViewSim {
             // add a point symmetrically to the starting point to compensate for roots being lost
         }
 
-        let y1 = y0 + vy * (-x0) / vx + a * x0 * x0 / (2 * vx * vx);
-        list_of_points.push(new Vector(0, y1));
+        let f = (x) => {
+            return y0 + vy * (x - x0) / vx + a * (x - x0) * (x - x0) / (2 * vx * vx);
+        }
 
-        let time = Util.solveLinear(a, vy);
-        list_of_points.push(particle.calculatePositionAt(time));
+        let x3 = Util.solveLinear(a / (vx * vx), vy / vx) + x0;
+        let y3 = f(x3)
+        if (x3 != null)
+            list_of_points.push(new Vector(x3, y3));
+        //   highest point on trajectory
+
+        let y2 = f(0);
+        if (Math.abs(y2 - y0) <= Math.abs(y3 - y0) * 1.5)
+            //   add only if it is closer to starting point than 
+            //   1.5 times distance by y between starting point and highest point 
+            list_of_points.push(new Vector(0, y2));
+        //   y intersection point
 
         let min_x = 0, max_x = 0, min_y = 0, max_y = 0;
 
         for (let point of list_of_points) {
-            let body = new PointMass(point, new Vector(), new Vector(), 0);
-            this.addBody(new ViewPointMass(body, "red"));
+            // let body = new PointMass(point, new Vector(), new Vector(), 0, particle.getId());
+            // this.addBody(new ViewPointMass(body, "red", 0));
 
             min_x = Math.min(min_x, point.getX());
             max_x = Math.max(max_x, point.getX());
             min_y = Math.min(min_y, point.getY());
             max_y = Math.max(max_y, point.getY());
         }
-        
-        let rect = new Polygon(particle.getId(), [
-            new Vector(min_x, min_y),
-            new Vector(min_x, max_y),
-            new Vector(max_x, max_y),
-            new Vector(max_x, min_y)
-        ])
-        this.addBody(new VeiwPolygon(rect));
-    }
 
-    test() {
-        // REMINDER::::: turn off auto suggestions for inputs
+        // let rect = new Polygon(particle.getId(), [
+        //     new Vector(min_x, min_y),
+        //     new Vector(min_x, max_y),
+        //     new Vector(max_x, max_y),
+        //     new Vector(max_x, min_y)
+        // ])
+        // this.addBody(new VeiwPolygon(rect));
+
+        let width = max_x - min_x;
+        let height = max_y - min_y;
+        let rect_centre = new Vector((min_x + max_x) / 2, (min_y + max_y) / 2)
+
+        this.target_scale = Math.min(700 / width, 350 / height);
+
+        let screen_centre = new Vector(this.canvas.width / 2, this.canvas.height / 2);
+        this.target_translation = screen_centre.added(rect_centre.multiplied(-this.target_scale).reflectedInX());
     }
 }
 

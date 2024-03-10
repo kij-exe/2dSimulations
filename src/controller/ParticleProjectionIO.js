@@ -105,7 +105,7 @@ class ParticleProjectionIO extends IOHandler {
                 this.view.getCanvas().onclick = null;
 
             }
-            //   toggles particle_input display
+            //   switches particle_input display
             //   between none and block
         }
 
@@ -308,7 +308,7 @@ class ParticleProjectionIO extends IOHandler {
 
         this.view.adjustMapping(particle);
 
-        let trajectory = new Trajectory(particle);
+        let trajectory = new Trajectory(particle, this.view.getScale());
         this.view.addBody(trajectory);
 
         this.body_list.push(particle);
@@ -912,12 +912,12 @@ class ParticleProjectionIO extends IOHandler {
 
         canvas_time_container.appendChild(time_control_container);
 
-        this.createSetToZeroButton(time_control_container);
+        this.createResetButton(time_control_container);
         this.createTimeSlider(time_control_container);
         this.createTimeInput(time_control_container);
     }
 
-    createSetToZeroButton(time_control_container) {
+    createResetButton(time_control_container) {
         let button = document.createElement("button");
         button.innerHTML = '<i class="material-icons" style="background-color: rgba(0, 0, 0, 0); color: #39498C">&#xe042;</i>';
 
@@ -925,6 +925,9 @@ class ParticleProjectionIO extends IOHandler {
             this.sim.resetTime();
             this.updateThumb();
             //   update positions
+            this.view.resetScale();
+            this.view.resetTranslation();
+            //   reset mapping of simulation space on the screen
         }
 
         time_control_container.appendChild(button);

@@ -30,7 +30,7 @@ class Util {
 
     //   b, c for
     //   bx + c = 0
-    //   output single number
+    //   output a single number
     //   if no roots, output NaN
     static solveLinear(b, c) {
         if (b == 0) {
