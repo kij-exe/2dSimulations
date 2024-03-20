@@ -38,7 +38,11 @@ class Controller {
 
         this.startUpdateLoop();
 
-        this.test();
+        this.test_flag = true;
+        document.getElementsByTagName("html")[0].addEventListener("keydown", (event) => {
+            if (event.code == "KeyL")
+                this.test_flag = !this.test_flag;
+        })
     }
 
     createSimulationsDropDown() {
@@ -101,7 +105,9 @@ class Controller {
 
     update(timestamp) {
         let dt = timestamp - this.prev_timestamp;
-        //   calculating time from the last update
+        if (this.test_flag) 
+            this.test(dt);
+            //   calculating time from the last update
         this.prev_timestamp = timestamp;
 
         for (let i = 0; i < this.sim_list.length; i++) {
@@ -252,7 +258,10 @@ class Controller {
         }
     }
 
-    test() {
+    test(dt) {
+        console.log("Current fps: " + Math.round((1000 / dt) * 10) / 10);
+        //   dt is the number of miliseconds between two consecutive frames
+        //   to get the number of frames per seconds, divide 1000 by dt
     }
 }
 
