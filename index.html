@@ -14,7 +14,28 @@
 </head>
 <body>
     <header class="box" id="caption" style="display: flex; flex-wrap: wrap;">
-        <p style="width: 100%;">Brief instructions</p>
+        <p style="width: 100%;">
+            To start, pick a simulation from the drop-down list below and click ‘+’ button on the right.
+            <br>
+            You can add new particles by opening a drop-down menu below.
+            You can input position and velocity of new particles as column vectors.
+            Alternatively, you can define position and velocity clicking on the canvas.
+            First click defines initial position of the particle.
+            Second click defines velocity vector relative to the position of first click.
+            To add a new particle to simulation, click on the “add” button or press Shift + B.
+            <br>
+            You can move camera around simulation with WASD keys.
+            To zoom in, press O, to zoom out press I.
+            You can pause / continue or close simulation using a set of buttons on the right.
+            <br>
+            If you want to stop simulation when a particle’s position or velocity reaches specific value by x or y, you can add an Event.
+            For example, if you want to know when a particle hits the ground, put a Position Event with value 0 for y (x can be left blank).
+            If you want to know coordinates of the highest point on the trajectory, put a Velocity Event with value 0 for y.
+            You can also stop simulation in a set amount of time using Time Event.
+            <br>
+            You can change current simulation time using a slider at the bottom or inputting specific value in the box.
+            The reset button will return time and camera position to their initial state.
+        </p>
         <datalist id="marks">
             <option>0</option>
             <option>60</option>

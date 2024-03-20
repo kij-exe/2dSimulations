@@ -8,7 +8,6 @@ class ParticleProjectionSim extends Simulation {
     constructor() {
         super();
         this.event_queue = new PriorityQueue(Event.compare);
-        this.test();
     }
 
     update(dt) {
@@ -24,6 +23,7 @@ class ParticleProjectionSim extends Simulation {
             //   if the time the event occurs is greater than the
             //   current time the simulation is at
             event.execute();
+            console.log(new Date().getTime());
             this.pause();
             //   execute the procedure defined when event was created
             this.time = event.getTime();
@@ -40,15 +40,6 @@ class ParticleProjectionSim extends Simulation {
 
     addEvent(event) {
         this.event_queue.push(event);
-    }
-
-    test() {
-        // for (let time of [5, 10, 12, 20]) {
-        //     let event = new TimeEvent(null, null, 0);
-        //     event.setTime(time*1000);
-        //     //   time multiplied by 1000 to convert it to miliseconds
-        //     this.event_queue.push(event);
-        // }
     }
 }
 

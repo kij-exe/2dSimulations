@@ -5,6 +5,7 @@ html {
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
+    min-height: 150%;
 }
 
 body * {

@@ -17,6 +17,7 @@ class Simulation {
 
     toggle() {
         this.is_active = !this.is_active;
+        console.log(new Date().getTime());
     }
 
     resetTime(value=0) {
