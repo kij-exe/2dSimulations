@@ -61,10 +61,14 @@ button:active {
   transform: translateY(2px);
 }
 
-p, label {
+p, label, ul {
     margin: 3px;
     padding: 3px;
     align-self: center;
+}
+
+ul {
+    padding-left: 18px;
 }
 
 select {

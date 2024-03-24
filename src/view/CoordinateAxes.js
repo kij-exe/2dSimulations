@@ -1,7 +1,7 @@
 import Vector from "../utility/Vector.js";
 
 
-class CoordinateAxis {
+class CoordinateAxes {
     constructor() {
     }
 
@@ -67,4 +67,4 @@ class CoordinateAxis {
         }
 }
 
-export {CoordinateAxis as default};
+export {CoordinateAxes as default};
