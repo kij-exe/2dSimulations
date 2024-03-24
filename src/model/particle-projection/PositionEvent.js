@@ -49,6 +49,7 @@ class PositionEvent extends Event {
             //   swap x1 and x2 so x2 >= x1
         }
         //   two solutions where x1 <= x2
+        console.log(x1, x2);
 
         
         if (x2 <= 0) {

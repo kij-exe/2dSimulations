@@ -855,8 +855,7 @@ class ParticleProjectionIO extends IOHandler {
             return;
         }
         
-        event.setTime(parseFloat(time));
-
+        event.setTime(parseFloat(time), this.sim.getTime());
         if (!event.isValid()) {
             error_message.innerHTML = this.INVALID_EVENT_ERROR;
             error_message.style.display = "block";
@@ -1039,40 +1038,41 @@ class ParticleProjectionIO extends IOHandler {
 
     createKeyboardInput() {
         let canvas = this.view.getCanvas();
-        canvas.onkeydown = (event) => {
-            if (event.code == "KeyW") {
+        let key_dictionary = {};
+
+        canvas.onkeyup = canvas.onkeydown = (event) => {
+            const is_pressed = event.type == "keydown";
+            key_dictionary[event.code] = is_pressed;
+
+            if (key_dictionary["KeyW"]) {
                 this.view.increaseTranslationBy(new Vector(0, 2 + event.shiftKey*10));
             }
-            else if (event.code == "KeyA") {
+            if (key_dictionary["KeyA"]) {
                 this.view.increaseTranslationBy(new Vector(2 + event.shiftKey*10, 0));
             }
-            else if (event.code == "KeyS") {
+            if (key_dictionary["KeyS"]) {
                 this.view.increaseTranslationBy(new Vector(0, -2 - event.shiftKey*10));
             }
-            else if (event.code == "KeyD") {
+            if (key_dictionary["KeyD"]) {
                 this.view.increaseTranslationBy(new Vector(-2 - event.shiftKey*10, 0));
             }
-            else if (event.code == "KeyI") {
+            if (key_dictionary["KeyI"]) {
                 this.view.increaseScaleBy(1/1.2);
             }
-            else if (event.code == "KeyO") {
+            if (key_dictionary["KeyO"]) {
                 this.view.increaseScaleBy(1.2);
             }
-            else if (event.code == "Space") {
+            if (key_dictionary["Space"]) {
                 event.preventDefault();
                 this.sim.toggle();
             }
-            else if (event.code == "Backspace") {
+            if (key_dictionary["Backspace"]) {
                 this.sim.resetTime();
                 this.updateThumb();
                 //   update positions
             }
-            else if (event.code == "KeyB" && event.shiftKey) {
+            if (key_dictionary["KeyB"] && event.shiftKey) {
                 this.addParticle();
-            }
-            else if (event.code == "KeyK") {
-                this.view.getCanvas().dispatchEvent(new MouseEvent("click", {clientX: 70, clientY: 500, target: this.view.getCanvas()}));
-                this.view.getCanvas().dispatchEvent(new MouseEvent("click", {clientX: 170, clientY: 350, target: this.view.getCanvas()}));
             }
         }
     }

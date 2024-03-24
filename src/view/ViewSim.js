@@ -2,8 +2,7 @@ import Polygon from "../model/general-purpose/Polygon.js";
 import PointMass from "../model/particle-projection/PointMass.js";
 import Util from "../utility/Util.js";
 import Vector from "../utility/Vector.js";
-import CoordinateAxis from "./CoordinateAxis.js";
-import Trajectory from "./Trajectory.js";
+import CoordinateAxes from "./CoordinateAxes.js";
 import ViewPointMass from "./ViewPointMass.js";
 import VeiwPolygon from "./ViewPolygon.js";
 
@@ -40,7 +39,8 @@ class ViewSim {
         this.INITIAL_TRANSLATION = new Vector(0 + 50, this.canvas.height - 50);
         this.translation = new Vector(0 + 50, this.canvas.height - 50);
 
-        this.coordinate_axis = new CoordinateAxis();
+        this.coordinate_axes = new CoordinateAxes();
+
     }
 
     getId() {
@@ -67,10 +67,12 @@ class ViewSim {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         //   clearing canvas area from the previous frame
 
+        // this.scale = this.target_scale;
+        // this.translation = this.target_translation;
         this.scale += (this.target_scale - this.scale) / 15;
         this.translation.add(this.target_translation.subtracted(this.translation).divided(15));
 
-        this.coordinate_axis.redraw(this);
+        this.coordinate_axes.redraw(this);
         
         for (let i = 0; i < this.body_list.length; i++) {
             this.body_list[i].redraw(this);
@@ -304,6 +306,11 @@ class ViewSim {
             //   1.5 times distance by y between starting point and highest point 
             list_of_points.push(new Vector(0, y2));
         //   y intersection point
+
+        list_of_points.push(
+            particle.calculatePositionAt(2)
+        )
+        // position after first 2 seconds of movement
 
         let min_x = 0, max_x = 0, min_y = 0, max_y = 0;
 
