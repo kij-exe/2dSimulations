@@ -23,7 +23,6 @@ class ParticleProjectionSim extends Simulation {
             //   if the time the event occurs is greater than the
             //   current time the simulation is at
             event.execute();
-            console.log(new Date().getTime());
             this.pause();
             //   execute the procedure defined when event was created
             this.time = event.getTime();
