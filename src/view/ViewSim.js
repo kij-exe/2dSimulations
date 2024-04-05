@@ -67,8 +67,6 @@ class ViewSim {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         //   clearing canvas area from the previous frame
 
-        // this.scale = this.target_scale;
-        // this.translation = this.target_translation;
         this.scale += (this.target_scale - this.scale) / 15;
         this.translation.add(this.target_translation.subtracted(this.translation).divided(15));
 
@@ -79,16 +77,6 @@ class ViewSim {
             //   redrawing each body separately, if bodies are stored by layers,
             //   then first bodies will be below later bodies
         }
-
-        // this.ctx.beginPath();
-        // this.ctx.moveTo(50, 50);
-        // this.ctx.lineTo(750, 50);
-        // this.ctx.lineTo(750, 400);
-        // this.ctx.lineTo(50, 400);
-        // this.ctx.lineTo(50, 50);
-
-        // this.ctx.strokeStyle = "blue";
-        // this.ctx.stroke();
     }
 
     addBody(body) {
@@ -315,22 +303,11 @@ class ViewSim {
         let min_x = 0, max_x = 0, min_y = 0, max_y = 0;
 
         for (let point of list_of_points) {
-            // let body = new PointMass(point, new Vector(), new Vector(), 0, particle.getId());
-            // this.addBody(new ViewPointMass(body, "red", 0));
-
             min_x = Math.min(min_x, point.getX());
             max_x = Math.max(max_x, point.getX());
             min_y = Math.min(min_y, point.getY());
             max_y = Math.max(max_y, point.getY());
         }
-
-        // let rect = new Polygon(particle.getId(), [
-        //     new Vector(min_x, min_y),
-        //     new Vector(min_x, max_y),
-        //     new Vector(max_x, max_y),
-        //     new Vector(max_x, min_y)
-        // ])
-        // this.addBody(new VeiwPolygon(rect));
 
         let width = max_x - min_x;
         let height = max_y - min_y;
