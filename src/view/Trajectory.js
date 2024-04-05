@@ -38,10 +38,6 @@ class Trajectory extends ViewBody {
     }
 
     redraw(view) {
-        // view.drawPoint(this.starting_point, "red", 7);
-        // view.drawPoint(this.control_point, "red", 7);
-        // view.drawPoint(this.end_point, "red", 7);
-        
         view.drawParabolaBy(this.starting_point, this.control_point, this.end_point, this.color);
     }
 }

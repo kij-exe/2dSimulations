@@ -3,15 +3,6 @@ import GeneralPurposeSim from "../model/general-purpose/GeneralPurposeSim.js";
 import ParticleProjectionIO from "./ParticleProjectionIO.js";
 import GeneralPurposeIO from "./GeneralPurposeIO.js";
 import ViewSim from "../view/ViewSim.js";
-import Simulation from "../model/Simulation.js";
-import PriorityQueue from "../utility/PriorityQueue.js"
-import PointMass from "../model/particle-projection/PointMass.js";
-import Vector from "../utility/Vector.js";
-import ViewPointMass from "../view/ViewPointMass.js";
-import TimeEvent from "../model/particle-projection/TimeEvent.js";
-import PositionEvent from "../model/particle-projection/PositionEvent.js";
-import VelocityEvent from "../model/particle-projection/VelocityEvent.js";
-import Util from "../utility/Util.js";
 
 
 class Controller {
@@ -23,9 +14,9 @@ class Controller {
     	//   simulation, its view and io handler are stored by the same
         //   index in the list
 
-        this.sim_names = ["Particle projection simulation", 
-                        "General-purpose simulation"];
-        this.sim_classes = ["ParticleProjection", "GeneralPurpose"];
+        this.sim_names = ["Particle projection simulation" 
+                         /*"General-purpose simulation"*/];
+        this.sim_classes = ["ParticleProjection"/*"GeneralPurpose"*/];
         //   lists of simulation names and their class identifiers
         //   can be easily changed if a new simulation is added
 
@@ -65,9 +56,9 @@ class Controller {
         //   corresponding simulation in the sim_list and to the
         //   name of its group of classes
 
-        let caption = document.getElementById("caption");
+        let header = document.getElementById("header");
         //   retreive the body tag from the page
-        caption.appendChild(this.select);
+        header.appendChild(this.select);
         //   add the drop-down on the page
     }
     
@@ -83,9 +74,9 @@ class Controller {
         //   click on the button will invoke an add_sim function
         //   of the controller with associated index that is selected
 
-        let caption = document.getElementById("caption");       
+        let header = document.getElementById("header");       
         //   retreive the body tag from the page
-        caption.appendChild(add_sim_button);
+        header.appendChild(add_sim_button);
     }
 
     startUpdateLoop() {     
@@ -99,7 +90,9 @@ class Controller {
 
     update(timestamp) {
         let dt = timestamp - this.prev_timestamp;
+        //   calculating time elapsed from the last frame
         this.prev_timestamp = timestamp;
+        //   for the next update call to calculate dt
 
         for (let i = 0; i < this.sim_list.length; i++) {
             if (this.sim_list[i].isActive()) {
