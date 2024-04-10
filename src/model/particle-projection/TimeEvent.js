@@ -12,5 +12,3 @@ class TimeEvent extends Event {
 }
 
 export {TimeEvent as default};
-
-
