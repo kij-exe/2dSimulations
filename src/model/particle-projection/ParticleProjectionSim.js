@@ -1,7 +1,6 @@
 import Simulation from "../Simulation.js";
 import PriorityQueue from "../../utility/PriorityQueue.js";
 import Event from "./Event.js"
-import TimeEvent from "./TimeEvent.js";
 
 
 class ParticleProjectionSim extends Simulation {

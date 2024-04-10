@@ -37,4 +37,3 @@ class VelocityEvent extends Event {
 
 
 export {VelocityEvent as default};
-
