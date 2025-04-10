@@ -27,6 +27,21 @@ class Controller {
 
         this.createAddSimButton();
 
+        document.addEventListener('mouseup', (event) => {
+            let canvasElements = document.getElementsByTagName("canvas");
+            if (
+                (
+                    document.activeElement === null ||
+                    document.activeElement === document.body ||
+                    document.activeElement.tagName === "BUTTON" ||
+                    document.activeElement.type == "range"
+                ) &&
+                canvasElements.length > 0
+            ) {
+                canvasElements[0].focus();
+            }
+        });
+
         this.startUpdateLoop();
     }
 
